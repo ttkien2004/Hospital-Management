@@ -34,26 +34,46 @@ const routes = [
       </Suspense>
     ),
   },
-  //   {
-  //     path: "noti",
-  //     lazy: React.lazy(() => import("./pages/Notification/NotiPage")),
-  //   },
-  //   {
-  //     path: "patient",
-  //     lazy: React.lazy(() => import("./pages/Patient/PatientPage")),
-  //   },
-  //   {
-  //     path: "medic",
-  //     lazy: React.lazy(() => import("./pages/Medical/MedicPage")),
-  //   },
-  //   {
-  //     path: "equipment",
-  //     lazy: React.lazy(() => import("./pages/Equipment/EquipPage")),
-  //   },
-  //   {
-  //     path: "disease",
-  //     lazy: React.lazy(() => import("./pages/Disease/DiseasePage")),
-  //   },
+  {
+    path: "noti",
+    element: (
+      <Suspense fallback={<div>Loading notification page</div>}>
+        <NotiPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "patient",
+    element: (
+      <Suspense fallback={<div>Loading Patient page</div>}>
+        <PatientPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "medic",
+    element: (
+      <Suspense fallback={<div>Loading Medic Page</div>}>
+        <MedicPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "equipment",
+    element: (
+      <Suspense fallback={<div>Loading Equipment page</div>}>
+        <EquipPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "disease",
+    element: (
+      <Suspense fallback={<div>Loading disease page</div>}>
+        <DiseasePage />
+      </Suspense>
+    ),
+  },
 ];
 
 const routesWithLayout = [
