@@ -4,7 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql");
 const mssql = require("mssql");
-const hospitalRoutes = require("./routes/hospitalRoutes");
+const PatientRoutes = require("./routes/PatientRoutes");
 
 const app = express();
 
@@ -57,6 +57,9 @@ app.get("/", (request, response) => {
     }
   });
 });
+
+app.use("/api/hospital", PatientRoutes);
+
 app.listen(process.env.PORT, () => {
   console.log(`Listen to port ${process.env.PORT}`);
 });
