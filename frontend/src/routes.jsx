@@ -20,9 +20,7 @@ const routes = [
   {
     path: "",
     // element: <Navigate to={"/nhan-vien"} />,
-    loader: () => {
-      return redirect("/nhan-vien");
-    },
+    element: <Navigate to={"/nhan-vien"}></Navigate>,
   },
   {
     path: "nhan-vien",
