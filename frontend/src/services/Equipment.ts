@@ -7,6 +7,7 @@ export interface ApiResponse<T> {
 }
 
 // interface Patient {}
+export interface EquipmentType {}
 export const EquipmentApi = {
   // Ví dụ
   // getPatients: async (): Promise<ApiResponse<Patient>> => {
@@ -20,4 +21,14 @@ export const EquipmentApi = {
   //     throw err;
   //   }
   // },
+  getAllEquipments: async () => {
+    try {
+      const response = await axiosClient.get("/getAllEquipments");
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
 };

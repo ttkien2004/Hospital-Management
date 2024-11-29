@@ -15,7 +15,7 @@ const NotiRoutes = require("./routes/NotificationRoutes");
 const { PrismaClient } = require("@prisma/client");
 
 const app = express();
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use((req, res, next) => {

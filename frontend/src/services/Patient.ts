@@ -41,4 +41,19 @@ export const PatientApi = {
       throw err;
     }
   },
+  deletePatient: async (id: string): Promise<ApiResponse<PatientType>> => {
+    try {
+      const response = await axiosClient.delete("/patient/deletePatient", {
+        data: {
+          id,
+        },
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      console.log(err?.message);
+      throw err;
+    }
+  },
 };
