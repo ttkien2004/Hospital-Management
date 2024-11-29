@@ -21,7 +21,7 @@ export interface PatientType {
 export const PatientApi = {
   getPatients: async (): Promise<ApiResponse<PatientType[]>> => {
     try {
-      const response = await axiosClient.get("/getAllPatients");
+      const response = await axiosClient.get("/patient/getAllPatients");
       return {
         data: response.data,
       };
@@ -32,7 +32,7 @@ export const PatientApi = {
   },
   getPatient: async (id: string): Promise<ApiResponse<PatientType>> => {
     try {
-      const response = await axiosClient.get(`/getPatient/${id}`);
+      const response = await axiosClient.get(`/patient/getPatient/${id}`);
       return {
         data: response.data,
       };

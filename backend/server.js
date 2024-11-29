@@ -4,7 +4,14 @@ const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql");
 const mssql = require("mssql");
+
+// import routes
 const PatientRoutes = require("./routes/PatientRoutes");
+const EquipmentRoutes = require("./routes/EquipRoutes");
+const MedicineRoutes = require("./routes/MedicineRoutes");
+const EmployeeRoutes = require("./routes/EmployeeRoutes");
+const NotiRoutes = require("./routes/NotificationRoutes");
+
 const { PrismaClient } = require("@prisma/client");
 
 const app = express();
@@ -60,7 +67,12 @@ app.get("/", (request, response) => {
   });
 });
 
-app.use("/api/hospital", PatientRoutes);
+// Implement API routes
+app.use("/api/patient", PatientRoutes);
+app.use("/api/equipment", EquipmentRoutes);
+app.use("/api/employee", EmployeeRoutes);
+app.use("/api/notification", NotiRoutes);
+app.use("/api/medicine", MedicineRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Listen to port ${process.env.PORT}`);
