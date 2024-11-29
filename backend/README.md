@@ -10,3 +10,7 @@ Thêm file `.env` vào folder `backend`:
 - DB_PASSWORD=<your_password>
 - DB_SERVER="127.0.0.1
 - DATABASE="btl2Export"
+- DATABASE_URL="sqlserver://<your_localhost>:1433;database=<your_databasename>;user=<your_username>;password=<your_password>;trustServerCertificate=true"
+# Cách chạy file backend
+- `npm run start:dev`: khởi động server
+- `npx prisma db pull`: Khởi tạo file prisma schema, cái này đã có sẵn nên khỏi làm cũng được
