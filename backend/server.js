@@ -5,8 +5,10 @@ const cors = require("cors");
 const mysql = require("mysql");
 const mssql = require("mssql");
 const PatientRoutes = require("./routes/PatientRoutes");
+const { PrismaClient } = require("@prisma/client");
 
 const app = express();
+const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use((req, res, next) => {
