@@ -1,9 +1,15 @@
 const express = require("express");
-// const {getAllEquips} = require('../controllers/Equipment')
+const {
+  getAllNotifications,
+  getNotification,
+  createNewNotification,
+  deleteNotification,
+} = require("../controllers/Notification");
 const router = express.Router();
 
-// Viết các API ở đây
-// ví dụ
-// router.get('/getAllEquipments', getAllEquips)
+router.get("/all", getAllNotifications);
+router.get("/:id", getNotification);
+router.post("/", createNewNotification);
+router.delete("/:id", deleteNotification);
 
 module.exports = router;

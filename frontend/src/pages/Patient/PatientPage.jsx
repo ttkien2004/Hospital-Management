@@ -2,10 +2,14 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Card } from "primereact/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { PatientApi } from "../../services/Patient";
+import moment from "moment";
 
 const PatientPage = () => {
   const [data, setData] = useState([]);
+  const [patients, setPatients] = useState([]);
+
   const dataSource = [
     {
       id: "123456789",
@@ -16,13 +20,19 @@ const PatientPage = () => {
     },
   ];
   const columns = [
-    { field: "id", header: "ID" },
-    { field: "fname", header: "Họ" },
-    { field: "lname", header: "Tên" },
-    { field: "Bdate", header: "Ngày sinh" },
-    { field: "sex", header: "Giới tính" },
+    { field: "ID", header: "ID" },
+    { field: "Ho", header: "Họ" },
+    { field: "Ten", header: "Tên" },
+    { field: "NgaySinh", header: "Ngày sinh" },
+    { field: "GioiTinh", header: "Giới tính" },
+    { field: "BHYT", header: "BHYT" },
+    { field: "ChieuCao", header: "Chiều cao" },
+    { field: "CanNang", header: "Cân nặng" },
   ];
 
+  const stringColumnDate = (rowData) => {
+    return moment(rowData.NgaySinh).format("YYYY-MM-DD");
+  };
   const dynamicColumns = columns.map((col, index) => {
     return (
       <Column
@@ -32,6 +42,7 @@ const PatientPage = () => {
         headerStyle={{ minWidth: "10rem" }}
         alignHeader={"center"}
         align={"center"}
+        body={col.field === "NgaySinh" && stringColumnDate}
       ></Column>
     );
   });
@@ -49,6 +60,17 @@ const PatientPage = () => {
       </>
     );
   };
+
+  useEffect(() => {
+    PatientApi.getPatients()
+      .then((res) => {
+        console.log(res.data);
+        setPatients(res.data ?? []);
+      })
+      .catch(() => {
+        console.log("Can not fetch data");
+      });
+  }, []);
   return (
     <Card
       style={{
@@ -60,7 +82,7 @@ const PatientPage = () => {
       }}
     >
       <DataTable
-        value={dataSource}
+        value={patients}
         tableStyle={{ minWidth: "60rem" }}
         paginator
         rows={10}
@@ -71,7 +93,7 @@ const PatientPage = () => {
         {dynamicColumns}
         <Column
           header="Thao tác"
-          headerStyle={{ minWidth: "12rem" }}
+          headerStyle={{ minWidth: "15rem" }}
           alignHeader={"center"}
           align={"center"}
           body={actionTemplate}
