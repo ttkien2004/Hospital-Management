@@ -11,6 +11,9 @@ const EquipmentRoutes = require("./routes/EquipRoutes");
 const MedicineRoutes = require("./routes/MedicineRoutes");
 const EmployeeRoutes = require("./routes/EmployeeRoutes");
 const NotiRoutes = require("./routes/NotificationRoutes");
+const KhoaRoutes = require("./routes/KhoaRoutes");
+const ThuocRoutes = require("./routes/ThuocRoutes");
+const CnRoutes = require("./routes/ChiNhanhRoutes");
 
 const { PrismaClient } = require("@prisma/client");
 
@@ -73,6 +76,9 @@ app.use("/api/equipment", EquipmentRoutes);
 app.use("/api/employee", EmployeeRoutes);
 app.use("/api/notification", NotiRoutes);
 app.use("/api/medicine", MedicineRoutes);
+app.use("/api/khoa", KhoaRoutes);
+app.use("/api/chinhanh", CnRoutes);
+app.use("/api/thuoc", ThuocRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Listen to port ${process.env.PORT}`);

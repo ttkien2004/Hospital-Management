@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosClient from "../axios/axiosConfig";
 
 export interface ApiResponse<T> {
@@ -16,6 +17,14 @@ export interface PatientType {
   BHYT: string;
   ChieuCao: string;
   CanNang: string;
+}
+
+export interface LanKhamBenh {
+  BnID: string;
+  NgayKham: string;
+  ChiSoSucKhoe: string;
+  DonThuocID: string;
+  YtaID: string;
 }
 
 export const PatientApi = {
@@ -44,7 +53,7 @@ export const PatientApi = {
   deletePatient: async (id: string): Promise<ApiResponse<PatientType>> => {
     try {
       const response = await axiosClient.delete("/patient/deletePatient", {
-        data: {
+        params: {
           id,
         },
       });
@@ -53,6 +62,39 @@ export const PatientApi = {
       };
     } catch (err) {
       console.log(err?.message);
+      throw err;
+    }
+  },
+  getLKB: async (id: string): Promise<ApiResponse<LanKhamBenh[]>> => {
+    try {
+      const response = await axiosClient.get(`/patient/getAllLKB/${id}`);
+
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
+  createNewPatient: async (
+    patient: PatientType
+  ): Promise<ApiResponse<PatientType>> => {
+    try {
+      const response = await axiosClient.post("/patient/createPatient", {
+        id: patient.ID,
+        cccd: patient.CCCD,
+        ho: patient.Ho,
+        ten: patient.Ten,
+        bdate: patient.NgaySinh,
+        sex: patient.GioiTinh,
+        bhyt: patient.BHYT,
+        height: patient.ChieuCao,
+        weight: patient.CanNang,
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
       throw err;
     }
   },

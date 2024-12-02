@@ -16,6 +16,7 @@ const MedicPage = React.lazy(() => import("./pages/Medical/MedicPage"));
 const EquipPage = React.lazy(() => import("./pages/Equipment/EquipPage"));
 const DiseasePage = React.lazy(() => import("./pages/Disease/DiseasePage"));
 
+const HistoryPage = React.lazy(() => import("./pages/Patient/HistoryPage"));
 const routes = [
   {
     path: "",
@@ -45,6 +46,14 @@ const routes = [
     element: (
       <Suspense fallback={<div>Loading Patient page</div>}>
         <PatientPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "patient/history-treatment/:id",
+    element: (
+      <Suspense fallback={<div>Loading History treatment page</div>}>
+        <HistoryPage />
       </Suspense>
     ),
   },
