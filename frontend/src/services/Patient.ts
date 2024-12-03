@@ -98,4 +98,24 @@ export const PatientApi = {
       throw err;
     }
   },
+  updatePatient: async (patient: PatientType) => {
+    try {
+      const response = await axiosClient.patch("/patient/updatePatient", {
+        id: patient.ID,
+        cccd: patient.CCCD,
+        ho: patient.Ho,
+        ten: patient.Ten,
+        bdate: patient.NgaySinh,
+        sex: patient.GioiTinh,
+        bhyt: patient.BHYT,
+        height: patient.ChieuCao,
+        weight: patient.CanNang,
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
 };

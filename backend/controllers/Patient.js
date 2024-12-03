@@ -59,11 +59,13 @@ const createNewPatient = (req, res) => {
 
 const deletePatient = (req, res) => {
   const { id } = req.query;
-  // console.log(id);
+  console.log(id);
   const query = `
-          DELETE FROM BenhNhan WHERE ${id} = ID
+          DELETE FROM BenhNhan WHERE ID = @id
       `;
-  new mssql.Request().query(query, (err, result) => {
+  const request = new mssql.Request();
+  request.input("id", mssql.Char, id);
+  request.query(query, (err, result) => {
     if (err) {
       res.status(400).json({ msg: err.message });
     } else {
@@ -114,7 +116,7 @@ const updatePatient = (req, res) => {
     if (err) {
       res.status(400).json({ msg: "Cannot update data from Benh Nhan" });
     } else {
-      res.status(200).json({ data: result.rowsAffected });
+      res.status(200).json({ data: "Update successfully" });
     }
   });
 };
