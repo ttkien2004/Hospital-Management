@@ -61,21 +61,21 @@ export const EquipmentApi = {
       throw err;
     }
   },
-  updateEquipment: async (equipment: EquipmentType) => {
-    try {
-      const response = await axiosClient.patch("/equipment/updateEquipment", {
-        data: {
-          ID: equipment.ID,
-          Ten: equipment.Ten,
-          TinhTrang: equipment.TinhTrang,
-          Phong: equipment.Phong,
-        },
-      });
-      return {
-        data: response.data,
-      };
-    } catch (err) {
-      throw err;
-    }
-  },
+  // updateEquipment: async (equipment: EquipmentType) => {
+  //   try {
+  //     const response = await axiosClient.patch("/equipment/updateEquipment", {
+  //       data: {
+  //         ID: equipment.ID,
+  //         Ten: equipment.Ten,
+  //         TinhTrang: equipment.TinhTrang,
+  //         Phong: equipment.Phong,
+  //       },
+  //     });
+  //     return {
+  //       data: response.data,
+  //     };
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // },
 };
