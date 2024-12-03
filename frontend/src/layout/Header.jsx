@@ -18,18 +18,6 @@ const Header = () => {
       title: "Thiết bị y tế",
       link: "/equipment",
     },
-    {
-      title: "Danh sách thuốc",
-      link: "/medic",
-    },
-    {
-      title: "Danh sách triệu chứng",
-      link: "/disease",
-    },
-    {
-      title: "Quản lý thông báo",
-      link: "/noti",
-    },
   ];
   return (
     <div className="header">
@@ -48,7 +36,7 @@ const Header = () => {
             display: "flex",
             flexDirection: "column",
             height: "400px",
-            justifyContent: "space-between",
+            // justifyContent: "space-between",
             marginTop: "50px",
             // backgroundColor: "#D4EBF8",
             // border: "1px solid red",

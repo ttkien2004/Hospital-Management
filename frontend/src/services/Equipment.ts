@@ -13,6 +13,9 @@ export interface EquipmentType {
   Ten: string;
   TinhTrang: string;
   Phong: string;
+  ThoiGianMuon: string;
+  ThoiGianTra: string;
+  NguoiMuon: string;
 }
 export const EquipmentApi = {
   // Ví dụ
@@ -61,21 +64,37 @@ export const EquipmentApi = {
       throw err;
     }
   },
-  // updateEquipment: async (equipment: EquipmentType) => {
-  //   try {
-  //     const response = await axiosClient.patch("/equipment/updateEquipment", {
-  //       data: {
-  //         ID: equipment.ID,
-  //         Ten: equipment.Ten,
-  //         TinhTrang: equipment.TinhTrang,
-  //         Phong: equipment.Phong,
-  //       },
-  //     });
-  //     return {
-  //       data: response.data,
-  //     };
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // },
+  updateEquipment: async (equipment: EquipmentType) => {
+    try {
+      const response = await axiosClient.patch("/equipment/updateEquipment", {
+        data: {
+          id: equipment.ID,
+          ten: equipment.Ten,
+          status: equipment.TinhTrang,
+          room: equipment.Phong,
+        },
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
+  createEquipment: async (equipment: EquipmentType) => {
+    try {
+      const response = await axiosClient.post("/equipment/createEquipment", {
+        data: {
+          ten: equipment.Ten,
+          status: equipment.TinhTrang,
+          room: equipment.Phong,
+        },
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
 };

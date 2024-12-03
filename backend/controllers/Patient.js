@@ -69,7 +69,7 @@ const deletePatient = (req, res) => {
     if (err) {
       res.status(400).json({ msg: err.message });
     } else {
-      res.status(201).json({ msg: "Delete successfully" });
+      res.status(201).json({ data: "Delete successfully" });
     }
   });
 };

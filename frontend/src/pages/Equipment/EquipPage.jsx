@@ -3,32 +3,36 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Card } from "primereact/card";
 import { Toolbar } from "primereact/toolbar";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { EquipmentApi } from "../../services/Equipment";
 
 const EquipPage = () => {
+  const initialEquipment = {
+    ID: 0,
+    Ten: "",
+    TinhTrang: "",
+    Phong: "",
+    ThoiGianMuon: "",
+    ThoiGianTra: "",
+    NguoiMuon: "",
+  };
   const [data, setData] = useState([]);
   const [selectedEquipments, setSelectedEquipments] = useState([]);
-  const dataSource = [
-    {
-      id: "123456789",
-      name: "alo",
-      status: "alo",
-      room: "1",
-      borrower: "Đạt Không Chín",
-      borrow_date: "24 - 10 -2024",
-      back_date: "25 - 10 - 2024",
-    },
-  ];
+  const [equipment, setEquipment] = useState(initialEquipment);
+  const [equipments, setEquipments] = useState([]);
+  const dt = useRef();
+
   const columns = [
-    { field: "id", header: "Mã thiết bị" },
-    { field: "name", header: "Tên" },
-    { field: "status", header: "Tình trạng" },
-    { field: "room", header: "Phòng" },
-    { field: "borrower", header: "Người mượn" },
-    { field: "borrow_date", header: "Thời gian mượn" },
-    { field: "back_date", header: "Thời gian trả" },
+    { field: "ID", header: "Mã thiết bị" },
+    { field: "Ten", header: "Tên thiết bị" },
+    { field: "TinhTrang", header: "Tình trạng" },
+    { field: "Phong", header: "Phòng" },
+    { field: "NguoiMuon", header: "Người mượn" },
   ];
 
+  const stringColumnDate = (rowData) => {
+    return moment(rowData).format("YYYY-MM-DD");
+  };
   const dynamicColumns = columns.map((col, index) => {
     return (
       <Column
@@ -41,6 +45,7 @@ const EquipPage = () => {
       ></Column>
     );
   });
+
   const startContent = () => {
     return (
       <>
@@ -58,7 +63,7 @@ const EquipPage = () => {
         <Button
           label="Xóa thiết bị"
           severity="danger"
-          disabled={true}
+          disabled={selectedEquipments.length === 0 ? true : false}
           // onClick={() => {
           //   setDeleteDialog(true);
           // }}
@@ -86,6 +91,16 @@ const EquipPage = () => {
       </>
     );
   };
+
+  useEffect(() => {
+    EquipmentApi.getAllEquipments()
+      .then((res) => {
+        setEquipments(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <Card
       style={{
@@ -97,8 +112,11 @@ const EquipPage = () => {
     >
       <Toolbar start={startContent} style={{ marginBottom: "20px" }}></Toolbar>
       <DataTable
+        ref={dt}
         dataKey={"ID"}
-        value={dataSource}
+        value={equipments}
+        selection={selectedEquipments}
+        onSelectionChange={(e) => setSelectedEquipments(e.value)}
         tableStyle={{ minWidth: "60rem" }}
         paginator
         rows={10}
