@@ -81,9 +81,6 @@ const PatientPage = () => {
     }
   };
 
-  const editPatient = (rowData) => {
-    setPatient(rowData);
-  };
   const handleUpdate = async (newPatient) => {
     try {
       const response = await PatientApi.updatePatient(newPatient);

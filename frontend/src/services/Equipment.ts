@@ -67,12 +67,10 @@ export const EquipmentApi = {
   updateEquipment: async (equipment: EquipmentType) => {
     try {
       const response = await axiosClient.patch("/equipment/updateEquipment", {
-        data: {
-          id: equipment.ID,
-          ten: equipment.Ten,
-          status: equipment.TinhTrang,
-          room: equipment.Phong,
-        },
+        id: equipment.ID,
+        ten: equipment.Ten,
+        status: equipment.TinhTrang,
+        room: equipment.Phong,
       });
       return {
         data: response.data,
@@ -84,11 +82,9 @@ export const EquipmentApi = {
   createEquipment: async (equipment: EquipmentType) => {
     try {
       const response = await axiosClient.post("/equipment/createEquipment", {
-        data: {
-          ten: equipment.Ten,
-          status: equipment.TinhTrang,
-          room: equipment.Phong,
-        },
+        ten: equipment.Ten,
+        status: equipment.TinhTrang,
+        room: equipment.Phong,
       });
       return {
         data: response.data,

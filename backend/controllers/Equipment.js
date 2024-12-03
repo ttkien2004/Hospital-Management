@@ -61,8 +61,7 @@ const deleteEquipment = (req, res) => {
   });
 };
 const updateEquipment = (req, res) => {
-  const { id } = req.params;
-  const { ten, status, room } = req.body;
+  const { id, ten, status, room } = req.body;
   console.log(id, ten, status, room);
   const query = `
     UPDATE ThietBi
