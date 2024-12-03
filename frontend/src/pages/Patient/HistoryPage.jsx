@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { Toolbar } from "primereact/toolbar";
 import { useEffect } from "react";
 import { Button } from "primereact/button";
+import "../style.css";
 
 const HistoryPage = () => {
   const { id } = useParams();

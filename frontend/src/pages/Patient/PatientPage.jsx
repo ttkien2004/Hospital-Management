@@ -8,7 +8,7 @@ import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import "./style.css";
+import "../style.css";
 //
 import { useEffect, useRef, useState } from "react";
 import { PatientApi } from "../../services/Patient";

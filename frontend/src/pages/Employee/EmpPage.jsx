@@ -4,8 +4,12 @@ import { Column } from "primereact/column";
 import { Card } from "primereact/card";
 import { Toolbar } from "primereact/toolbar";
 import { Dialog } from "primereact/dialog";
+import { InputText } from "primereact/inputtext";
+import { RadioButton } from "primereact/radiobutton";
+import "../style.css";
 
 import { useState } from "react";
+import { Calendar } from "primereact/calendar";
 
 const EmpPage = () => {
   const [data, setData] = useState([]);
@@ -14,6 +18,7 @@ const EmpPage = () => {
   const [isView, setIsView] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const [gender, setGender] = useState("");
 
   // Các hàm dùng cho CRUD
   const handleDelete = async () => {};
@@ -22,7 +27,7 @@ const EmpPage = () => {
 
   const dataSource = [
     {
-      email: "alo",
+      username: "alo",
       fname: "alo",
       lname: "alo",
       Bdate: "alo",
@@ -32,7 +37,7 @@ const EmpPage = () => {
     },
   ];
   const columns = [
-    { field: "email", header: "Email" },
+    { field: "username", header: "Username" },
     { field: "fname", header: "Họ" },
     { field: "lname", header: "Tên" },
     { field: "Bdate", header: "Ngày sinh" },
@@ -137,7 +142,7 @@ const EmpPage = () => {
         ></Column>
       </DataTable>
 
-      {/* Dialog thêm, xem thông tin user */}
+      {/* Dialog thêm, xem, cập nhật thông tin user */}
       <Dialog
         header={
           isView
@@ -146,6 +151,7 @@ const EmpPage = () => {
             ? "Cập nhật thông tin người dùng"
             : "Thêm người dùng mới"
         }
+        style={{ width: "600px", height: "650px" }}
         visible={visible}
         onHide={() => setVisible(false)}
         footer={() => (
@@ -172,7 +178,115 @@ const EmpPage = () => {
             )}
           </>
         )}
-      ></Dialog>
+      >
+        {/* Thêm form vào đây */}
+        {/* Giới tính */}
+        <div className="field">
+          <label>Giới tính</label>
+          <div id="sex" style={{ display: "flex" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "10px",
+              }}
+            >
+              <RadioButton
+                inputId="nam"
+                value={gender}
+                onChange={(e) => {
+                  setGender(e.value);
+                }}
+                checked={gender === "M"}
+                disabled={isView ? true : false}
+              ></RadioButton>
+              <label htmlFor="nam" style={{ marginLeft: "10px" }}>
+                Nam
+              </label>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <RadioButton
+                inputId="nu"
+                value={gender}
+                onChange={(e) => {
+                  setGender(e.value);
+                }}
+                checked={gender === "F"}
+                disabled={isView ? true : false}
+              ></RadioButton>
+              <label htmlFor="nu" style={{ marginLeft: "10px" }}>
+                Nữ
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Tài khoản, mật khẩu này tao giả sử v chứ không biết :)) */}
+        <div className="same-field">
+          <div className="field">
+            <label htmlFor="username">Username</label>
+            <InputText
+              id="username"
+              value={""}
+              disabled={isView ? true : false}
+            ></InputText>
+          </div>
+          <div className="field">
+            <label htmlFor="pass"></label>
+            <InputText
+              id="pass"
+              type="password"
+              disabled={isView ? true : false}
+            ></InputText>
+          </div>
+        </div>
+        {/* Họ và tên */}
+        <div className="same-field">
+          <div className="field">
+            <label htmlFor="ho">Họ tên lót</label>
+            <InputText
+              id="ho"
+              value={""}
+              disabled={isView ? true : false}
+            ></InputText>
+          </div>
+          <div className="field">
+            <label htmlFor="ten">Tên</label>
+            <InputText
+              id="ten"
+              value={""}
+              disabled={isView ? true : false}
+            ></InputText>
+          </div>
+        </div>
+
+        {/* Ngày sinh */}
+        <div className="field">
+          <label>Ngày sinh</label>
+          <Calendar showIcon disabled={isView ? true : false}></Calendar>
+        </div>
+
+        {/* SỐ điện thoại và vai trò */}
+        <div className="same-field">
+          <div className="field">
+            <label htmlFor="sdt">Số điện thoại</label>
+            <InputText
+              id="sdt"
+              value={""}
+              disabled={isView ? true : false}
+            ></InputText>
+          </div>
+          <div className="field">
+            <label htmlFor="role">Vai trò</label>
+            <InputText
+              id="role"
+              value={""}
+              disabled={isView ? true : false}
+            ></InputText>
+          </div>
+        </div>
+      </Dialog>
 
       {/* Dialog xác nhận xóa user */}
       <Dialog
