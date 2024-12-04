@@ -8,14 +8,13 @@ const mssql = require("mssql");
 // import routes
 const PatientRoutes = require("./routes/PatientRoutes");
 const EquipmentRoutes = require("./routes/EquipRoutes");
-const MedicineRoutes = require("./routes/MedicineRoutes");
 const EmployeeRoutes = require("./routes/EmployeeRoutes");
-const NotiRoutes = require("./routes/NotificationRoutes");
 const KhoaRoutes = require("./routes/KhoaRoutes");
 const ThuocRoutes = require("./routes/ThuocRoutes");
 const CnRoutes = require("./routes/ChiNhanhRoutes");
 
 const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 const app = express();
 // const prisma = new PrismaClient();
@@ -58,24 +57,20 @@ async function connectToDatabase() {
   }
 }
 
-app.get("/", (request, response) => {
+app.get("/", async (req, res) => {
   // Execute a SELECT query
-  new mssql.Request().query("SELECT * FROM NhanVien", (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-    } else {
-      response.send(result.recordset); // Send query result as response
-      console.dir(result.recordset);
-    }
-  });
+  try {
+    const patients = await prisma.benhNhan.findMany();
+    res.status(200).json({ data: patients });
+  } catch (err) {
+    res.status(500).json({ err: "An error occured" });
+  }
 });
 
 // Implement API routes
 app.use("/api/patient", PatientRoutes);
 app.use("/api/equipment", EquipmentRoutes);
 app.use("/api/employee", EmployeeRoutes);
-app.use("/api/notification", NotiRoutes);
-app.use("/api/medicine", MedicineRoutes);
 app.use("/api/khoa", KhoaRoutes);
 app.use("/api/chinhanh", CnRoutes);
 app.use("/api/thuoc", ThuocRoutes);
