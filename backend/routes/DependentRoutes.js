@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllDependence } = require("../controllers/Thuoc");
+const { getAllDependence } = require("../controllers/Dependent");
 const router = express.Router();
 
 router.get("/getAllThuoc", getAllDependence);

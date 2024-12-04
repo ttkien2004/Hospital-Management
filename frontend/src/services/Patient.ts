@@ -5,6 +5,7 @@ export interface ApiResponse<T> {
   data: T;
   status?: number;
   message?: string;
+  error?: string;
 }
 
 export interface PatientType {
@@ -36,7 +37,7 @@ export const PatientApi = {
       };
     } catch (err) {
       console.log(err.message);
-      throw err;
+      throw err.response.data;
     }
   },
   getPatient: async (id: string): Promise<ApiResponse<PatientType>> => {
@@ -47,7 +48,7 @@ export const PatientApi = {
       };
     } catch (err) {
       console.log(err.message);
-      throw err;
+      throw err.response.data;
     }
   },
   deletePatient: async (id: string): Promise<ApiResponse<PatientType>> => {
@@ -62,10 +63,10 @@ export const PatientApi = {
       };
     } catch (err) {
       console.log(err?.message);
-      throw err;
+      throw err.response.data;
     }
   },
-  getLKB: async (id: string): Promise<ApiResponse<LanKhamBenh[]>> => {
+  getAllLKB: async (id: string): Promise<ApiResponse<LanKhamBenh[]>> => {
     try {
       const response = await axiosClient.get(`/patient/getAllLKB/${id}`);
 
@@ -73,7 +74,7 @@ export const PatientApi = {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
   createNewPatient: async (
@@ -95,7 +96,7 @@ export const PatientApi = {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
   updatePatient: async (patient: PatientType) => {
@@ -115,7 +116,7 @@ export const PatientApi = {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
 };

@@ -177,6 +177,7 @@ model NhanVien {
   DuocSi      DuocSi?
   Nhan        Nhan[]
   QuanTriVien QuanTriVien?
+  Users       Users?
   YTa         YTa?
 }
 
@@ -254,4 +255,11 @@ model YTa {
   ChiNhanh     ChiNhanh?     @relation(fields: [ChinhNhanhID], references: [ID], map: "fk_chinhanhid_yta")
   Khoa         Khoa?         @relation(fields: [TenKhoa], references: [TenKhoa], onDelete: NoAction, onUpdate: NoAction, map: "fk_tenkhoa_yta")
   NhanVien     NhanVien      @relation(fields: [YtaID], references: [ID], onDelete: Cascade, map: "fk_ytaid_yta")
+}
+
+model Users {
+  userID   String   @id(map: "PK__Users__CB9A1CDF24DE82F7") @db.Char(9)
+  Username String?  @db.VarChar(255)
+  Password String?  @db.VarChar(255)
+  NhanVien NhanVien @relation(fields: [userID], references: [ID], onUpdate: NoAction, map: "fk_user")
 }

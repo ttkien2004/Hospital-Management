@@ -119,7 +119,7 @@ const deleteEquipment = async (req, res) => {
   try {
     const equip = await prisma.thietBi.findUnique({
       where: {
-        ID: equipID,
+        ID: parseInt(equipID),
       },
     });
     if (!equip) {
@@ -127,7 +127,7 @@ const deleteEquipment = async (req, res) => {
     }
     const deleteEquip = await prisma.thietBi.delete({
       where: {
-        ID: equipID,
+        ID: parseInt(equipID),
       },
     });
     return res
@@ -163,7 +163,7 @@ const updateEquipment = async (req, res) => {
   try {
     const equip = await prisma.thietBi.findUnique({
       where: {
-        ID: id,
+        ID: parseInt(id),
       },
     });
     if (!equip) {
@@ -171,7 +171,7 @@ const updateEquipment = async (req, res) => {
     }
     const newEquip = await prisma.thietBi.update({
       where: {
-        ID: id,
+        ID: parseInt(id),
       },
       data: {
         Ten: ten,

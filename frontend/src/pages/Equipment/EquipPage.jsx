@@ -339,8 +339,8 @@ const EquipPage = () => {
               label="Xác nhận"
               severity="danger"
               onClick={() => {
-                console.log(equipment.ID);
-                handleDelete(equipment.ID);
+                console.log(selectedEquipments.ID);
+                handleDelete(selectedEquipments.ID);
               }}
             ></Button>
           </>

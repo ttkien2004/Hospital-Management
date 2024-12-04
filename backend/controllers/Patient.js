@@ -89,17 +89,18 @@ const createNewPatient = async (req, res) => {
   // });
 
   try {
+    console.log(id, cccd, ho, ten, bdate, sex, bhyt, height, weight);
     const patient = await prisma.benhNhan.create({
       data: {
         ID: id,
         CCCD: cccd,
         Ho: ho,
         Ten: ten,
-        NgaySinh: bdate,
+        NgaySinh: bdate !== "" ? new Date(bdate) : null,
         GioiTinh: sex,
-        BHYT: bhyt,
-        ChieuCao: height,
-        CanNang: weight,
+        BHYT: bhyt || null,
+        ChieuCao: height ? parseFloat(height) : null,
+        CanNang: weight ? parseFloat(weight) : null,
       },
     });
 
@@ -243,11 +244,11 @@ const updatePatient = async (req, res) => {
         Ho: ho,
         Ten: ten,
         CCCD: cccd,
-        NgaySinh: bdate,
+        NgaySinh: bdate !== "" ? new Date(bdate) : null,
         GioiTinh: sex,
-        BHYT: bhyt,
-        ChieuCao: height,
-        CanNang: weight,
+        BHYT: bhyt || null,
+        ChieuCao: height || null,
+        CanNang: weight || null,
       },
     });
     return res
