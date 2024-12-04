@@ -10,12 +10,10 @@ import React, { Suspense } from "react";
 //   };
 // }
 const EmpPage = React.lazy(() => import("./pages/Employee/EmpPage"));
-const NotiPage = React.lazy(() => import("./pages/Notification/NotiPage"));
 const PatientPage = React.lazy(() => import("./pages/Patient/PatientPage"));
-const MedicPage = React.lazy(() => import("./pages/Medical/MedicPage"));
 const EquipPage = React.lazy(() => import("./pages/Equipment/EquipPage"));
-const DiseasePage = React.lazy(() => import("./pages/Disease/DiseasePage"));
 
+const HistoryPage = React.lazy(() => import("./pages/Patient/HistoryPage"));
 const routes = [
   {
     path: "",
@@ -33,14 +31,6 @@ const routes = [
     ),
   },
   {
-    path: "noti",
-    element: (
-      <Suspense fallback={<div>Loading notification page</div>}>
-        <NotiPage />
-      </Suspense>
-    ),
-  },
-  {
     path: "patient",
     element: (
       <Suspense fallback={<div>Loading Patient page</div>}>
@@ -49,10 +39,10 @@ const routes = [
     ),
   },
   {
-    path: "medic",
+    path: "patient/history-treatment/:id",
     element: (
-      <Suspense fallback={<div>Loading Medic Page</div>}>
-        <MedicPage />
+      <Suspense fallback={<div>Loading History treatment page</div>}>
+        <HistoryPage />
       </Suspense>
     ),
   },
@@ -61,14 +51,6 @@ const routes = [
     element: (
       <Suspense fallback={<div>Loading Equipment page</div>}>
         <EquipPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "disease",
-    element: (
-      <Suspense fallback={<div>Loading disease page</div>}>
-        <DiseasePage />
       </Suspense>
     ),
   },
