@@ -11,7 +11,12 @@ const EquipmentRoutes = require("./routes/EquipRoutes");
 const MedicineRoutes = require("./routes/MedicineRoutes");
 const EmployeeRoutes = require("./routes/EmployeeRoutes");
 const NotiRoutes = require("./routes/NotificationRoutes");
-
+const DiseaseRoutes = require("./routes/DiseaseRoutes");
+const AllergyRoutes = require("./routes/AllergyRoutes");
+const DiseaseSymptomRoutes = require("./routes/DiseaseSymptomRoutes");
+const PatientSymptomRoutes = require("./routes/PatientSymptomRoutes");
+const UserRoute = require("./routes/UserRoute");
+const AuthRoutes = require("./routes/AuthRoutes");
 const { PrismaClient } = require("@prisma/client");
 
 const app = express();
@@ -68,11 +73,17 @@ app.get("/", (request, response) => {
 });
 
 // Implement API routes
+app.use("/api/user", UserRoute);
+app.use("/api/auth", AuthRoutes);
 app.use("/api/patient", PatientRoutes);
 app.use("/api/equipment", EquipmentRoutes);
 app.use("/api/employee", EmployeeRoutes);
 app.use("/api/notification", NotiRoutes);
 app.use("/api/medicine", MedicineRoutes);
+app.use("/api/disease", DiseaseRoutes);
+app.use("/api/allergy", AllergyRoutes);
+app.use("/api/disease-symptom", DiseaseSymptomRoutes);
+app.use("/api/patient-symptom", PatientSymptomRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Listen to port ${process.env.PORT}`);
