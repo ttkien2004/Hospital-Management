@@ -3,40 +3,30 @@ import DefaultLayout from "./layout/DefaultLayout";
 import ErrorBoundary from "./layout/ErrorBoundary";
 import React, { Suspense } from "react";
 
-// function lazy(moduleLoader) {
-//   return async () => {
-//     const component = await moduleLoader();
-//     return { Component: component.default };
-//   };
-// }
 const EmpPage = React.lazy(() => import("./pages/Employee/EmpPage"));
-const NotiPage = React.lazy(() => import("./pages/Notification/NotiPage"));
 const PatientPage = React.lazy(() => import("./pages/Patient/PatientPage"));
-const MedicPage = React.lazy(() => import("./pages/Medical/MedicPage"));
 const EquipPage = React.lazy(() => import("./pages/Equipment/EquipPage"));
-const DiseasePage = React.lazy(() => import("./pages/Disease/DiseasePage"));
+const Login = React.lazy(() => import("./pages/Login"));
+const HistoryPage = React.lazy(() => import("./pages/Patient/HistoryPage"));
 
 const routes = [
   {
     path: "",
-    // element: <Navigate to={"/nhan-vien"} />,
-    element: <Navigate to={"/nhan-vien"}></Navigate>,
+    element: <Navigate to={"/login"} />,
   },
   {
-    path: "nhan-vien",
-    // lazy: lazy(() => import("./pages/Employee/EmpPage")),
-    // lazy: React.lazy(() => import("./pages/Employee/EmpPage")),
+    path: "login",
     element: (
-      <Suspense fallback={<div>Loading Employee Page...</div>}>
-        <EmpPage />
+      <Suspense fallback={<div>Loading Login Page...</div>}>
+        <Login />
       </Suspense>
     ),
   },
   {
-    path: "noti",
+    path: "nhan-vien",
     element: (
-      <Suspense fallback={<div>Loading notification page</div>}>
-        <NotiPage />
+      <Suspense fallback={<div>Loading Employee Page...</div>}>
+        <EmpPage />
       </Suspense>
     ),
   },
@@ -49,10 +39,10 @@ const routes = [
     ),
   },
   {
-    path: "medic",
+    path: "patient/history-treatment/:id",
     element: (
-      <Suspense fallback={<div>Loading Medic Page</div>}>
-        <MedicPage />
+      <Suspense fallback={<div>Loading History treatment page</div>}>
+        <HistoryPage />
       </Suspense>
     ),
   },
@@ -61,14 +51,6 @@ const routes = [
     element: (
       <Suspense fallback={<div>Loading Equipment page</div>}>
         <EquipPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "disease",
-    element: (
-      <Suspense fallback={<div>Loading disease page</div>}>
-        <DiseasePage />
       </Suspense>
     ),
   },

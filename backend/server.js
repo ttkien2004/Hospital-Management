@@ -17,6 +17,10 @@ const DiseaseSymptomRoutes = require("./routes/DiseaseSymptomRoutes");
 const PatientSymptomRoutes = require("./routes/PatientSymptomRoutes");
 const UserRoute = require("./routes/UserRoute");
 const AuthRoutes = require("./routes/AuthRoutes");
+const KhoaRoutes = require("./routes/KhoaRoutes");
+const ThuocRoutes = require("./routes/ThuocRoutes");
+const CnRoutes = require("./routes/ChiNhanhRoutes");
+
 const { PrismaClient } = require("@prisma/client");
 
 const app = express();
@@ -84,6 +88,9 @@ app.use("/api/disease", DiseaseRoutes);
 app.use("/api/allergy", AllergyRoutes);
 app.use("/api/disease-symptom", DiseaseSymptomRoutes);
 app.use("/api/patient-symptom", PatientSymptomRoutes);
+app.use("/api/khoa", KhoaRoutes);
+app.use("/api/chinhanh", CnRoutes);
+app.use("/api/thuoc", ThuocRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Listen to port ${process.env.PORT}`);

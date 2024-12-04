@@ -1,3 +1,4 @@
+import { APIOptions } from "primereact/api";
 import axiosClient from "../axios/axiosConfig";
 
 export interface ApiResponse<T> {
@@ -7,7 +8,15 @@ export interface ApiResponse<T> {
 }
 
 // interface Patient {}
-export interface EquipmentType {}
+export interface EquipmentType {
+  ID: number;
+  Ten: string;
+  TinhTrang: string;
+  Phong: string;
+  ThoiGianMuon: string;
+  ThoiGianTra: string;
+  NguoiMuon: string;
+}
 export const EquipmentApi = {
   // Ví dụ
   // getPatients: async (): Promise<ApiResponse<Patient>> => {
@@ -21,9 +30,66 @@ export const EquipmentApi = {
   //     throw err;
   //   }
   // },
-  getAllEquipments: async () => {
+  getAllEquipments: async (): Promise<ApiResponse<EquipmentType[]>> => {
     try {
-      const response = await axiosClient.get("/getAllEquipments");
+      const response = await axiosClient.get("/equipment/getAllEquipments");
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
+  getEquipment: async (id: string): Promise<ApiResponse<EquipmentType>> => {
+    try {
+      const response = await axiosClient.get(`/equipment/getEquipment/${id}`);
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
+  deleteEquipment: async (id: string) => {
+    try {
+      const response = await axiosClient.delete("/equipment/deleteEquipment", {
+        params: {
+          equipID: id,
+        },
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
+  updateEquipment: async (equipment: EquipmentType) => {
+    try {
+      const response = await axiosClient.patch("/equipment/updateEquipment", {
+        data: {
+          id: equipment.ID,
+          ten: equipment.Ten,
+          status: equipment.TinhTrang,
+          room: equipment.Phong,
+        },
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
+  createEquipment: async (equipment: EquipmentType) => {
+    try {
+      const response = await axiosClient.post("/equipment/createEquipment", {
+        data: {
+          ten: equipment.Ten,
+          status: equipment.TinhTrang,
+          room: equipment.Phong,
+        },
+      });
       return {
         data: response.data,
       };
