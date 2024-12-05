@@ -7,6 +7,7 @@ const EmpPage = React.lazy(() => import("./pages/Employee/EmpPage"));
 const PatientPage = React.lazy(() => import("./pages/Patient/PatientPage"));
 const EquipPage = React.lazy(() => import("./pages/Equipment/EquipPage"));
 const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
 const HistoryPage = React.lazy(() => import("./pages/Patient/HistoryPage"));
 
 const routes = [
@@ -19,6 +20,14 @@ const routes = [
     element: (
       <Suspense fallback={<div>Loading Login Page...</div>}>
         <Login />
+      </Suspense>
+    ),
+  },
+  {
+    path: "register",
+    element: (
+      <Suspense fallback={<div>Loading Register Page...</div>}>
+        <Register />
       </Suspense>
     ),
   },

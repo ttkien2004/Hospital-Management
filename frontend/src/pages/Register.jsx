@@ -12,9 +12,10 @@ import { AuthApi } from "../services/Auth";
 import { setUser } from "../redux/actions/userActions";
 import { toast } from "react-toastify";
 
-const Login = () => {
+const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [Id, setId] = useState("");
   const [error, setError] = useState(""); // Thêm state để lưu thông báo lỗi
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -23,21 +24,19 @@ const Login = () => {
     e.preventDefault();
 
     // Kiểm tra nếu các trường để trống
-    if (!username || !password) {
+    if (!username || !password || !Id) {
       setError("Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
     try {
       // Gửi yêu cầu đăng nhập qua API
-      const response = await AuthApi.login(username, password);
-      if (response.msg === "Login successful") {
-        // console.log("Login success:", response.user);
-        toast.success("Đăng nhập thành công");
+      const response = await AuthApi.register(username, password, Id);
+      if (response.msg === "User registered successfully") {
+        toast.success("Đăng ký thành công");
         setError("");
-        dispatch(setUser(response.user));
 
-        navigate("/nhan-vien");
+        navigate("/login");
       } else {
         setError(
           response.mgs || "Đăng nhập không thành công. Vui lòng thử lại."
@@ -46,15 +45,13 @@ const Login = () => {
     } catch (error) {
       // Bắt lỗi từ API hoặc các vấn đề không mong muốn
 
-      if (error.response.status === 401) {
-        setError("Sai tên đăng nhập hoặc mật khẩu. Vui lòng thử lại.");
-      } else if (error.response.status === 404) {
-        setError("Không tìm thấy người dùng. Vui lòng kiểm tra lại.");
+      if (error.response.status === 400) {
+        setError("Username đã tồn tại. Vui lòng chọn username khác.");
       } else {
         setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
       }
       //   setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
-      //   console.error("Login error:", error);
+      //   console.error("Register error:", error);
     }
   };
 
@@ -73,6 +70,19 @@ const Login = () => {
         {/* Hiển thị lỗi nếu có */}
         <form onSubmit={handleSubmit} className="p-fluid">
           <div className="field my-4">
+            <span className="p-float-label p-input-icon-right">
+              <InputText
+                id="Id"
+                value={Id}
+                onChange={(e) => setId(e.target.value)}
+                className="w-full"
+                required
+                placeholder="Nhập mã ID nhân viên của bạn"
+              />
+              <label htmlFor="Id">Nhân viên Id</label>
+            </span>
+          </div>
+          <div className="field mb-4">
             <span className="p-float-label p-input-icon-right">
               <InputText
                 id="username"
@@ -104,19 +114,20 @@ const Login = () => {
 
           <Button
             type="submit"
-            label="Đăng nhập"
+            label="Đăng ký"
             className="w-full mt-3 p-button-rounded p-button-primary"
           />
         </form>
         <Button
           severity="help"
-          onClick={() => navigate("/register")}
-          label="Đăng ký tài khoản"
+          type="submit"
+          label="<- Quay lại trang đăng nhập"
           className="w-full mt-3 p-button-rounded p-button-primary"
+          onClick={() => navigate("/login")}
         />
       </Card>
     </div>
   );
 };
 
-export default Login;
+export default Register;

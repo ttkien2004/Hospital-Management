@@ -17,12 +17,15 @@ export const AuthApi = {
   },
 
   // Register API
-  register: async (registerBody) => {
+  register: async (UserName, UserPassword, UserID) => {
+    const registerBody = {
+      UserName,
+      UserPassword,
+      UserID,
+    };
     try {
       const response = await axiosClient.post("/auth/register", registerBody);
-      return {
-        data: response.data,
-      };
+      return response;
     } catch (err) {
       console.log(err.message);
       throw err;
