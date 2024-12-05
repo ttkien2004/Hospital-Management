@@ -26,7 +26,7 @@ const getAllPatients = async (req, res) => {
 
 const getPatient = async (req, res) => {
   const { id } = req.params;
-  if (id === undefined || id.length < 9) {
+  if (id === undefined || id.length < 8) {
     return res.status(400).json({ error: "ID không hợp lệ" });
   } else if (!id.startsWith("BN")) {
     return res.status(400).json({ error: "ID bặt buộc bắt đầu với chuỗi BN" });
@@ -59,7 +59,7 @@ const getPatient = async (req, res) => {
 
 const createNewPatient = async (req, res) => {
   const { id, cccd, ho, ten, bdate, sex, bhyt, height, weight } = req.body;
-  if (id === undefined || id.length < 9) {
+  if (id === undefined || id.length < 8) {
     return res.status(400).json({ error: "ID không hợp lệ" });
   } else if (!id.startsWith("BN")) {
     return res.status(400).json({ error: "ID bặt buộc bắt đầu với chuỗi BN" });
@@ -115,7 +115,7 @@ const createNewPatient = async (req, res) => {
 
 const deletePatient = async (req, res) => {
   const { id } = req.query;
-  if (id === undefined || id.length < 9) {
+  if (id === undefined || id.length < 8) {
     return res.status(400).json({ error: "ID không hợp lệ" });
   }
   // else if (!id.startsWith("BN")) {
@@ -160,7 +160,7 @@ const deletePatient = async (req, res) => {
 
 const getLKB = async (req, res) => {
   const { BnID } = req.params;
-  if (BnID === undefined || BnID.length < 9) {
+  if (BnID === undefined || BnID.length < 8) {
     return res.status(400).json({ error: "ID không hợp lệ" });
   } else if (!BnID.startsWith("BN")) {
     return res.status(400).json({ error: "ID bặt buộc bắt đầu với chuỗi BN" });
@@ -198,7 +198,7 @@ const getLKB = async (req, res) => {
 
 const updatePatient = async (req, res) => {
   const { id, cccd, ho, ten, bdate, sex, bhyt, height, weight } = req.body;
-  if (id === undefined || id.length < 9) {
+  if (id === undefined || id.length < 8) {
     return res.status(400).json({ error: "ID không hợp lệ" });
   } else if (!id.startsWith("BN")) {
     return res.status(400).json({ error: "ID bặt buộc bắt đầu với chuỗi BN" });
@@ -258,6 +258,7 @@ const updatePatient = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 module.exports = {
   getAllPatients,
   getPatient,

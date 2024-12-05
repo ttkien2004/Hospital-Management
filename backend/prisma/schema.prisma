@@ -8,8 +8,8 @@ datasource db {
 }
 
 model BacSi {
-  BsID                     String    @id(map: "PK__BacSi__5DF790292FD62742") @db.Char(9)
-  ChinhNhanhID             Int?
+  BsID                     String    @id(map: "PK__BacSi__5DF7902908AE121B") @db.Char(9)
+  ChinhNhanhID             String?   @db.Char(5)
   TenKhoa                  String?   @db.NVarChar(50)
   ChiNhanh                 ChiNhanh? @relation(fields: [ChinhNhanhID], references: [ID], map: "fk_chinhanhid_bacsi")
   NhanVien                 NhanVien  @relation(fields: [BsID], references: [ID], onDelete: Cascade, map: "fk_id_bacsi")
@@ -18,14 +18,14 @@ model BacSi {
 }
 
 model Benh {
-  MaBenh            String              @id(map: "PK__Benh__DB7E2D49AD72ECBB") @db.Char(9)
+  MaBenh            String              @id(map: "PK__Benh__DB7E2D49CFB60CFE") @db.Char(9)
   TenBenh           String              @db.NVarChar(50)
   Kham              Kham[]
   TrieuChungCuaBenh TrieuChungCuaBenh[]
 }
 
 model BenhNhan {
-  ID          String        @id(map: "PK__BenhNhan__3214EC2790DBE7B7") @db.Char(9)
+  ID          String        @id(map: "PK__BenhNhan__3214EC278172EBA9") @db.Char(9)
   CCCD        String        @db.NVarChar(12)
   Ho          String        @db.NVarChar(20)
   Ten         String        @db.NVarChar(20)
@@ -39,8 +39,7 @@ model BenhNhan {
 }
 
 model ChiNhanh {
-  ID            Int             @id(map: "PK__ChiNhanh__3214EC270DE8E47F") @default(autoincrement())
-  MaChiNhanh    String?         @db.NVarChar(32)
+  ID            String          @id(map: "PK__ChiNhanh__3214EC27749298E9") @default("'CN'+right('000'+CONVERT([varchar],NEXT VALUE FOR [SeqChiNhanh]),(3))", map: "DF__ChiNhanh__ID__6D0D32F4") @db.Char(5)
   DiaChi        String          @db.NVarChar(50)
   BacSi         BacSi[]
   DuocSi        DuocSi[]
@@ -49,30 +48,31 @@ model ChiNhanh {
 }
 
 model CoTaiKham {
-  BnTaiKhamID                                             String      @db.Char(9)
-  NgayKham                                                DateTime    @db.Date
-  BnID                                                    String      @db.Char(9)
-  NgayTaiKham                                             DateTime    @db.Date
-  LanKhamBenh_CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh     LanKhamBenh @relation("CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh", fields: [BnID, NgayTaiKham], references: [BnID, NgayKham], onUpdate: NoAction, map: "fk_kham_cotaikham")
-  LanKhamBenh_CoTaiKham_BnTaiKhamID_NgayKhamToLanKhamBenh LanKhamBenh @relation("CoTaiKham_BnTaiKhamID_NgayKhamToLanKhamBenh", fields: [BnTaiKhamID, NgayKham], references: [BnID, NgayKham], onDelete: Cascade, map: "fk_taikham_cotaikham")
+  BnID                                                String      @db.Char(9)
+  NgayKham                                            DateTime    @db.Date
+  NgayTaiKham                                         DateTime    @db.Date
+  LanKhamBenh_CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh LanKhamBenh @relation("CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh", fields: [BnID, NgayTaiKham], references: [BnID, NgayKham], onUpdate: NoAction, map: "fk_kham_cotaikham")
+  LanKhamBenh_CoTaiKham_BnID_NgayKhamToLanKhamBenh    LanKhamBenh @relation("CoTaiKham_BnID_NgayKhamToLanKhamBenh", fields: [BnID, NgayKham], references: [BnID, NgayKham], onDelete: Cascade, map: "fk_taikham_cotaikham")
 
-  @@id([BnTaiKhamID, NgayKham], map: "PK__CoTaiKha__FB24BAE776C2E442")
-  @@unique([BnID, NgayTaiKham], map: "UQ__CoTaiKha__5F5C40AA5B84FD75")
+  @@id([BnID, NgayKham], map: "PK__CoTaiKha__F9FF0E2133F748ED")
+  @@unique([BnID, NgayTaiKham], map: "UQ__CoTaiKha__5F5C40AA2D7D5EF0")
 }
 
 model DiUng {
-  TenDiUng String   @db.NVarChar(9)
+  TenDiUng String   @db.NVarChar(50)
   BnID     String   @db.Char(9)
   BenhNhan BenhNhan @relation(fields: [BnID], references: [ID], onDelete: Cascade, map: "fk_bnid_diung")
 
-  @@id([TenDiUng, BnID], map: "PK__DiUng__C1AD0AFCEFFA612D")
+  @@id([TenDiUng, BnID], map: "PK__DiUng__C1AD0AFCBF51473C")
 }
 
 model DonThuoc {
-  DonID    String @id(map: "PK__DonThuoc__4DA8B408F041E5A8") @db.Char(9)
-  DuocSiID String @db.Char(9)
-  DuocSi   DuocSi @relation(fields: [DuocSiID], references: [DuocSiID], onDelete: Cascade, map: "fk_duocsiid_donthuoc")
-  Gom      Gom[]
+  DonID       String        @id(map: "PK__DonThuoc__4DA8B4081E61E434") @db.Char(9)
+  DuocSiID    String        @db.Char(9)
+  TongGia     Decimal?      @default(0, map: "DF__DonThuoc__TongGi__6A30C649") @db.Decimal(18, 2)
+  DuocSi      DuocSi        @relation(fields: [DuocSiID], references: [DuocSiID], onDelete: Cascade, map: "fk_duocsiid_donthuoc")
+  Gom         Gom[]
+  LanKhamBenh LanKhamBenh[]
 }
 
 model DuocMuon {
@@ -82,24 +82,26 @@ model DuocMuon {
   ThietBi      ThietBi       @relation(fields: [ThietBiID], references: [ID], onDelete: Cascade, map: "fk_thietbiid_duocmuon")
   LichSuSuDung LichSuSuDung?
 
-  @@id([ThietBiID, NvID], map: "PK__DuocMuon__0F566612B007BE1C")
+  @@id([ThietBiID, NvID], map: "PK__DuocMuon__0F5666128EDD607D")
 }
 
 model DuocSi {
-  DuocSiID   String     @id(map: "PK__DuocSi__FB8A93A9AEA421E9") @db.Char(9)
-  ChiNhanhID Int?
+  DuocSiID   String     @id(map: "PK__DuocSi__FB8A93A9028AAAED") @db.Char(9)
+  ChiNhanhID String?    @db.Char(5)
   DonThuoc   DonThuoc[]
   ChiNhanh   ChiNhanh?  @relation(fields: [ChiNhanhID], references: [ID], map: "fk_chinhanhid_duocsi")
   NhanVien   NhanVien   @relation(fields: [DuocSiID], references: [ID], onDelete: Cascade, map: "fk_id_duocsi")
 }
 
 model Gom {
-  DonID    String   @db.Char(9)
-  MaThuoc  String   @db.Char(9)
-  DonThuoc DonThuoc @relation(fields: [DonID], references: [DonID], onDelete: Cascade, map: "fk_donid_gom")
-  Thuoc    Thuoc    @relation(fields: [MaThuoc], references: [MaSoThuoc], onDelete: Cascade, map: "fk_mathuoc_gom")
+  DonID     String   @db.Char(9)
+  MaThuoc   String   @db.Char(9)
+  SoLuong   Int?
+  LieuLuong Int?
+  DonThuoc  DonThuoc @relation(fields: [DonID], references: [DonID], onDelete: Cascade, map: "fk_donid_gom")
+  Thuoc     Thuoc    @relation(fields: [MaThuoc], references: [MaSoThuoc], onDelete: Cascade, map: "fk_mathuoc_gom")
 
-  @@id([DonID, MaThuoc], map: "PK__Gom__5913AB6AC0EF516D")
+  @@id([DonID, MaThuoc], map: "PK__Gom__5913AB6AD99B6FDF")
 }
 
 model Kham {
@@ -111,12 +113,12 @@ model Kham {
   Benh                  Benh?                  @relation(fields: [MaBenh], references: [MaBenh], map: "fk_mabenh_kham")
   TrieuChungCuaBenhNhan TrieuChungCuaBenhNhan?
 
-  @@id([BnID, NgayKham, BsID], map: "PK__Kham__D1A2F9B13A4402AF")
-  @@unique([BnID, NgayKham], map: "UQ__Kham__F9FF0E20EF1DCEC7")
+  @@id([BnID, NgayKham, BsID], map: "PK__Kham__D1A2F9B183DBABF9")
+  @@unique([BnID, NgayKham], map: "UQ__Kham__F9FF0E200F4E8E99")
 }
 
 model Khoa {
-  TenKhoa                   String          @id(map: "PK__Khoa__AAD361597ABE9628") @db.NVarChar(50)
+  TenKhoa                   String          @id(map: "PK__Khoa__AAD36159A044F332") @db.NVarChar(50)
   TKID                      String?         @db.Char(9)
   BacSi_BacSi_TenKhoaToKhoa BacSi[]         @relation("BacSi_TenKhoaToKhoa")
   BacSi_Khoa_TKIDToBacSi    BacSi?          @relation("Khoa_TKIDToBacSi", fields: [TKID], references: [BsID], map: "fk_truongkhoaid_khoa")
@@ -125,18 +127,19 @@ model Khoa {
 }
 
 model LanKhamBenh {
-  BnID                                                  String     @db.Char(9)
-  NgayKham                                              DateTime   @db.Date
-  ChiSoSucKhoe                                          String     @db.NVarChar(50)
-  DonThuocID                                            String?    @db.Char(9)
-  YtaID                                                 String?    @db.Char(9)
-  CoTaiKham_CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh     CoTaiKham? @relation("CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh")
-  CoTaiKham_CoTaiKham_BnTaiKhamID_NgayKhamToLanKhamBenh CoTaiKham? @relation("CoTaiKham_BnTaiKhamID_NgayKhamToLanKhamBenh")
-  Kham                                                  Kham?
-  BenhNhan                                              BenhNhan   @relation(fields: [BnID], references: [ID], onDelete: Cascade, map: "fk_bnid_lankhambenh")
-  YTa                                                   YTa?       @relation(fields: [YtaID], references: [YtaID], map: "fk_ytaid_lankhambenh")
+  BnID                                              String     @db.Char(9)
+  NgayKham                                          DateTime   @db.Date
+  ChiSoSucKhoe                                      String     @db.NVarChar(50)
+  DonThuocID                                        String?    @db.Char(9)
+  YtaID                                             String?    @db.Char(9)
+  CoTaiKham_CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh CoTaiKham? @relation("CoTaiKham_BnID_NgayTaiKhamToLanKhamBenh")
+  CoTaiKham_CoTaiKham_BnID_NgayKhamToLanKhamBenh    CoTaiKham? @relation("CoTaiKham_BnID_NgayKhamToLanKhamBenh")
+  Kham                                              Kham?
+  BenhNhan                                          BenhNhan   @relation(fields: [BnID], references: [ID], onDelete: Cascade, map: "fk_bnid_lankhambenh")
+  DonThuoc                                          DonThuoc?  @relation(fields: [DonThuocID], references: [DonID], onDelete: NoAction, onUpdate: NoAction, map: "fk_donthuocid_lankhambenh")
+  YTa                                               YTa?       @relation(fields: [YtaID], references: [YtaID], map: "fk_ytaid_lankhambenh")
 
-  @@id([BnID, NgayKham], map: "PK__LanKhamB__F9FF0E21D5E44F68")
+  @@id([BnID, NgayKham], map: "PK__LanKhamB__F9FF0E21319F7A58")
 }
 
 model LichSuSuDung {
@@ -147,25 +150,25 @@ model LichSuSuDung {
   ThoiGianTra  DateTime? @db.Date
   DuocMuon     DuocMuon  @relation(fields: [ThietBiID, NhanVienID], references: [ThietBiID, NvID], onDelete: Cascade, map: "fk_thietbiid_lichsusudung")
 
-  @@id([ThietBiID, NhanVienID, LssdID], map: "PK__LichSuSu__8D2A51E4BB159836")
-  @@unique([ThietBiID, NhanVienID], map: "UQ__LichSuSu__5606FA9C1416DFA5")
+  @@id([ThietBiID, NhanVienID, LssdID], map: "PK__LichSuSu__8D2A51E4F8F1A871")
+  @@unique([ThietBiID, NhanVienID], map: "UQ__LichSuSu__5606FA9C4140C815")
 }
 
 model Nhan {
   NvID     String   @db.Char(9)
   TbID     String   @db.Char(9)
-  DaNhan   Boolean  @default(false, map: "DF__Nhan__DaNhan__68487DD7")
+  DaNhan   Boolean  @default(false, map: "DF__Nhan__DaNhan__6B24EA82")
   NhanVien NhanVien @relation(fields: [NvID], references: [ID], onDelete: Cascade, map: "fk_nvid_nhan")
   ThongBao ThongBao @relation(fields: [TbID], references: [ID], onUpdate: NoAction, map: "fk_tbid_nhan")
 
-  @@id([NvID, TbID], map: "PK__Nhan__AF95101D62D45CE1")
+  @@id([NvID, TbID], map: "PK__Nhan__AF95101DB60BA0A2")
 }
 
 model NhanVien {
-  ID          String       @id(map: "PK__NhanVien__3214EC272F46A01C") @db.Char(9)
+  ID          String       @id(map: "PK__NhanVien__3214EC27DB814C1F") @db.Char(9)
   Ho          String       @db.NVarChar(50)
   TEN         String       @db.NVarChar(50)
-  CCCD        String       @unique(map: "UQ__NhanVien__A955A0AA8EBCF698") @db.NVarChar(12)
+  CCCD        String       @unique(map: "UQ__NhanVien__A955A0AA76234524") @db.Char(12)
   NgaySinh    DateTime?    @db.Date
   GioiTinh    String?      @db.Char(1)
   Email       String?      @db.NVarChar(50)
@@ -182,21 +185,21 @@ model NhanVien {
 }
 
 model QuanTriVien {
-  QtvID    String     @id(map: "PK__QuanTriV__5C62712921E34F5F") @db.Char(9)
+  QtvID    String     @id(map: "PK__QuanTriV__5C627129F921BBB1") @db.Char(9)
   NhanVien NhanVien   @relation(fields: [QtvID], references: [ID], onDelete: Cascade, map: "fk_qtvid_quantrivien")
   ThongBao ThongBao[]
 }
 
 model ThietBi {
-  ID        Int        @id(map: "PK__ThietBi__3214EC2743FB76F0") @default(autoincrement())
-  Ten       String     @db.NVarChar(20)
-  TinhTrang String     @db.NVarChar(20)
-  Phong     String?    @db.NVarChar(20)
+  ID        Int        @id(map: "PK__ThietBi__3214EC27A3BC25E4") @default(autoincrement())
+  Ten       String     @db.NVarChar(50)
+  TinhTrang String     @db.NVarChar(50)
+  Phong     String?    @db.NVarChar(50)
   DuocMuon  DuocMuon[]
 }
 
 model ThongBao {
-  ID          String      @id(map: "PK__ThongBao__3214EC27AC61EB2A") @db.Char(9)
+  ID          String      @id(map: "PK__ThongBao__3214EC27F95CD227") @db.Char(9)
   QtvID       String      @db.Char(9)
   TieuDe      String      @db.NVarChar(100)
   NoiDung     String      @db.NVarChar(200)
@@ -206,7 +209,7 @@ model ThongBao {
 }
 
 model Thuoc {
-  MaSoThuoc      String   @id(map: "PK__Thuoc__FE2849C05B82CEE6") @db.Char(9)
+  MaSoThuoc      String   @id(map: "PK__Thuoc__FE2849C002AB56BB") @db.Char(9)
   Ten            String   @db.NVarChar(50)
   GiaNhap        Decimal? @db.Decimal(10, 2)
   GiaBan         Decimal? @db.Decimal(10, 2)
@@ -220,12 +223,12 @@ model Thuoc {
 }
 
 model ThuocChiNhanh {
-  ChinhNhanhID Int
+  ChinhNhanhID String   @db.Char(5)
   TenKhoa      String   @db.NVarChar(50)
   ChiNhanh     ChiNhanh @relation(fields: [ChinhNhanhID], references: [ID], onDelete: Cascade, map: "fk_chinhanhid_thuocchinhanh")
   Khoa         Khoa     @relation(fields: [TenKhoa], references: [TenKhoa], onUpdate: NoAction, map: "fk_tenkhoa_thuocchinhanh")
 
-  @@id([ChinhNhanhID, TenKhoa], map: "PK__ThuocChi__A3FC855BFBF747D6")
+  @@id([ChinhNhanhID, TenKhoa], map: "PK__ThuocChi__A3FC855BC9F5ADB7")
 }
 
 model TrieuChungCuaBenh {
@@ -233,7 +236,7 @@ model TrieuChungCuaBenh {
   TrieuChungBenh String @db.NVarChar(50)
   Benh           Benh   @relation(fields: [MaBenh], references: [MaBenh], onDelete: Cascade, map: "fk_mabenh_trieuchungbenh")
 
-  @@id([MaBenh, TrieuChungBenh], map: "PK__TrieuChu__7D456D7CE22677CC")
+  @@id([MaBenh, TrieuChungBenh], map: "PK__TrieuChu__7D456D7C7671FBBC")
 }
 
 model TrieuChungCuaBenhNhan {
@@ -243,13 +246,13 @@ model TrieuChungCuaBenhNhan {
   TrieuChung String   @db.NVarChar(50)
   Kham       Kham     @relation(fields: [BnID, NgayKham, BsID], references: [BnID, NgayKham, BsID], onDelete: Cascade, map: "fk_id_trieuchungcuabenhnhan")
 
-  @@id([BnID, NgayKham, BsID, TrieuChung], map: "PK__TrieuChu__96808A8ACAD99894")
-  @@unique([BnID, NgayKham, BsID], map: "UQ__TrieuChu__D1A2F9B09B14B9AB")
+  @@id([BnID, NgayKham, BsID, TrieuChung], map: "PK__TrieuChu__96808A8AEC50B957")
+  @@unique([BnID, NgayKham, BsID], map: "UQ__TrieuChu__D1A2F9B0E9EBEF88")
 }
 
 model YTa {
-  YtaID        String        @id(map: "PK__YTa__A3C3FF61A558B8FF") @db.Char(9)
-  ChinhNhanhID Int?
+  YtaID        String        @id(map: "PK__YTa__A3C3FF6121C99D22") @db.Char(9)
+  ChinhNhanhID String?       @db.Char(5)
   TenKhoa      String?       @db.NVarChar(50)
   LanKhamBenh  LanKhamBenh[]
   ChiNhanh     ChiNhanh?     @relation(fields: [ChinhNhanhID], references: [ID], map: "fk_chinhanhid_yta")
@@ -258,8 +261,9 @@ model YTa {
 }
 
 model Users {
-  userID   String   @id(map: "PK__Users__CB9A1CDF24DE82F7") @db.Char(9)
-  Username String?  @db.VarChar(255)
-  Password String?  @db.VarChar(255)
-  NhanVien NhanVien @relation(fields: [userID], references: [ID], onUpdate: NoAction, map: "fk_user")
+  UserID       String   @id(map: "PK__Users__1788CCAC508E52D8") @db.Char(9)
+  UserName     String   @db.VarChar(50)
+  UserPassword String   @db.Char(255)
+  UserType     String   @db.NVarChar(50)
+  NhanVien     NhanVien @relation(fields: [UserID], references: [ID], onDelete: Cascade, map: "fk_userid_users")
 }

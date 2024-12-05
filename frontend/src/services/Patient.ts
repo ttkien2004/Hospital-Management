@@ -119,4 +119,33 @@ export const PatientApi = {
       throw err.response.data;
     }
   },
+  getPrescription: async (bnid: string, date: string) => {
+    try {
+      const response = await axios.get("http://localhost:5000/LayDonThuoc", {
+        params: {
+          bn_id: bnid,
+          date: date,
+        },
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err.response.data;
+    }
+  },
+  getHistoryTreatment: async (bnid: string) => {
+    try {
+      const response = await axios.get("http://localhost:5000/LayLichSuKham", {
+        params: {
+          id: bnid,
+        },
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err.response.data;
+    }
+  },
 };

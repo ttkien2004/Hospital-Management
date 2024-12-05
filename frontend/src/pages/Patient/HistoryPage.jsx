@@ -10,6 +10,8 @@ import moment from "moment";
 import "../style.css";
 import { Dialog } from "primereact/dialog";
 import { Panel } from "primereact/panel";
+import { toast } from "react-toastify";
+import { InputText } from "primereact/inputtext";
 
 const HistoryPage = ({
   historyRef,
@@ -18,8 +20,17 @@ const HistoryPage = ({
   history,
   setHistory,
 }) => {
+  const initialHistory = {
+    NgayKham: "",
+    ChiSoSucKhoe: "",
+    YtaID: "",
+    Ho_va_ten: "",
+  };
   const { id } = useParams();
   // const [history, setHistory] = useState([]);
+  const [prescription, setPrescription] = useState([]);
+  const [selectedHistory, setSelectedHistory] = useState(initialHistory);
+  const [dialog, setDialog] = useState(false);
   const initialPatient = {
     ID: "",
     CCCD: "",
@@ -35,13 +46,36 @@ const HistoryPage = ({
   const columns = [
     { field: "NgayKham", header: "Ngày khám" },
     { field: "ChiSoSucKhoe", header: "Chỉ số sức khỏe" },
-    { field: "DonThuocID", header: "Đơn thuốc" },
     { field: "YtaID", header: "Y tá" },
+    { field: "Ho_va_ten", header: "Họ và tên y tá" },
   ];
 
-  const stringColumnDate = (rowData) => {
-    return moment(rowData.NgaySinh).format("YYYY-MM-DD");
+  const prescriptionColumns = [
+    { field: "Ma_don", header: "Mã đơn thuốc" },
+    { field: "Ten_thuoc", header: "Tên thuốc" },
+    { field: "Hdsd", header: "Hướng dẫn sử dụng" },
+    { field: "Outdate", header: "Hạn sử dụng" },
+    { field: "Limit", header: "Chống chỉ định" },
+    { field: "Ten_duoc_si", header: "Tên dược sĩ" },
+  ];
+  // Handle lấy đơn thuốc
+  const handleGetPrescription = async (bnid, date) => {
+    try {
+      const response = await PatientApi.getPrescription(bnid, date);
+
+      if (response) {
+        console.log(response.data.data);
+        setPrescription(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(err.error);
+    }
   };
+  const stringColumnDate = (rowData) => {
+    return moment(rowData.NgayKham).format("YYYY-MM-DD");
+  };
+
   const dynamicColumns = columns.map((col, index) => {
     return (
       <Column
@@ -56,20 +90,47 @@ const HistoryPage = ({
     );
   });
 
-  const actionTemplate = () => {
+  const stringPrescriptionColumnDate = (rowData) => {
+    return moment(rowData.Outdate).format("YYYY-MM-DD");
+  };
+  const dynamicPrescriptionColumns = prescriptionColumns.map((col, index) => {
+    return (
+      <Column
+        key={index}
+        field={col.field}
+        header={col.header}
+        headerStyle={{ minWidth: "8rem" }}
+        alignHeader={"center"}
+        align={"center"}
+        body={col.field === "Outdate" && stringPrescriptionColumnDate}
+      ></Column>
+    );
+  });
+
+  const actionTemplate = (rowData) => {
     return (
       <>
-        {/* <Button
-          severity="danger"
-          icon="pi pi-trash"
-          style={{ marginLeft: "10px", marginRight: "10px" }}
-          tooltip="Xóa lịch sử khám"
+        <Button
+          severity="secondary"
+          icon="pi pi-address-book"
+          tooltip="Xem thông tin đơn thuốc"
           tooltipOptions={{ position: "top" }}
-        ></Button> */}
+          style={{ marginRight: "10px" }}
+          onClick={() => {
+            // console.log(rowData);
+            // console.log(patient.ID);
+            setSelectedHistory(rowData);
+            setDialog(true);
+            handleGetPrescription(
+              patient.ID,
+              moment(rowData.NgayKham).format("YYYY-MM-DD")
+            );
+          }}
+        ></Button>
         <Button
           severity="info"
           icon="pi pi-eye"
-          tooltip="Xem thông lịch sử khám"
+          tooltip="Xem thông tin lịch sử khám"
           tooltipOptions={{ position: "top" }}
         ></Button>
       </>
@@ -84,17 +145,6 @@ const HistoryPage = ({
     );
   };
 
-  useEffect(() => {
-    // console.log(id);
-    // PatientApi.getAllLKB(patient.ID)
-    //   .then((res) => {
-    //     setHistory(res.data);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    // console.log(Bnid, TenBn);
-  }, []);
   return (
     // <Card
     //   style={{
@@ -173,6 +223,18 @@ const HistoryPage = ({
     //   </Card>
     // </Panel>
     <Card
+      title={() => (
+        <>
+          <i
+            className="pi pi-refresh"
+            style={{ fontSize: "20px", marginRight: "10px", cursor: "pointer" }}
+            onClick={() => {
+              setHistory([]), setPatient(initialPatient);
+            }}
+          ></i>
+          Làm mới
+        </>
+      )}
       style={{ marginBottom: "100px", marginLeft: "20px", marginRight: "20px" }}
     >
       <div ref={historyRef}>
@@ -205,6 +267,39 @@ const HistoryPage = ({
           ></Column>
         </DataTable>
       </div>
+
+      {/* Dialog cho đơn thuốc */}
+      <Dialog
+        visible={dialog}
+        onHide={() => setDialog(false)}
+        header={`Thông tin đơn thuốc ngày ${moment(
+          selectedHistory.NgayKham
+        ).format("YYYY-MM-DD")}`}
+        footer={() => (
+          <>
+            <Button
+              outlined
+              label="Đóng"
+              onClick={() => {
+                setSelectedHistory(initialHistory), setDialog(false);
+              }}
+            ></Button>
+          </>
+        )}
+        style={{ width: "1000px", height: "600px" }}
+      >
+        <DataTable
+          value={prescription}
+          tableStyle={{ minWidth: "60rem" }}
+          paginator
+          rows={10}
+          rowsPerPageOptions={[10, 20, 30]}
+          paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        >
+          {dynamicPrescriptionColumns}
+        </DataTable>
+      </Dialog>
     </Card>
   );
 };

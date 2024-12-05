@@ -64,7 +64,7 @@ const PatientPage = () => {
   const randomStr = (field) => {
     let result = field;
     const digits = "0123456789";
-    for (let i = 0; i < 9 - field.length; i++) {
+    for (let i = 0; i < 8 - field.length; i++) {
       result += digits[Math.floor(Math.random() * digits.length)];
     }
     return result;
@@ -137,10 +137,11 @@ const PatientPage = () => {
 
   const getAllHistory = async (Bnid) => {
     try {
-      const response = await PatientApi.getAllLKB(Bnid);
+      const response = await PatientApi.getHistoryTreatment(Bnid);
 
       if (response) {
-        setHistory(response.data);
+        console.log(response.data.data);
+        setHistory(response.data.data);
       }
     } catch (err) {
       console.log(err.error);
@@ -335,7 +336,7 @@ const PatientPage = () => {
               ? "Thay đổi dữ liệu của bệnh nhân"
               : "Thêm bệnh nhân"
           }
-          style={{ width: "600px", height: "500px" }}
+          style={{ width: "600px", height: "800px" }}
           visible={dialog}
           onHide={() => setDialog(false)}
           footer={customFooter}
