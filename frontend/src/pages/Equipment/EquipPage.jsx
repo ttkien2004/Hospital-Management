@@ -5,8 +5,17 @@ import { Card } from "primereact/card";
 import { Toolbar } from "primereact/toolbar";
 import { useEffect, useRef, useState } from "react";
 import { EquipmentApi } from "../../services/Equipment";
-
+import { useSelector } from "react-redux";
 const EquipPage = () => {
+  const user = useSelector((state) => state.user.user);
+  if (
+    !user ||
+    (user.UserType !== "BacSi" &&
+      user.UserType !== "YTa" &&
+      user.UserType !== "QuanTriVien")
+  ) {
+    return <div>Bạn không có quyền hạn truy cập trang này</div>;
+  }
   const initialEquipment = {
     ID: 0,
     Ten: "",

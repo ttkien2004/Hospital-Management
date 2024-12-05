@@ -14,8 +14,17 @@ import { useEffect, useRef, useState } from "react";
 import { PatientApi } from "../../services/Patient";
 import moment from "moment";
 import { InputText } from "primereact/inputtext";
-
+import { useSelector } from "react-redux";
 const PatientPage = () => {
+  const user = useSelector((state) => state.user.user);
+  if (
+    !user ||
+    (user.UserType !== "BacSi" &&
+      user.UserType !== "YTa" &&
+      user.UserType !== "QuanTriVien")
+  ) {
+    return <div>Bạn không có quyền hạn truy cập trang này</div>;
+  }
   const initialPatient = {
     ID: "",
     CCCD: "",

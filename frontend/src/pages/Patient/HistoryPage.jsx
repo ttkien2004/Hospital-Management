@@ -6,8 +6,17 @@ import { Toolbar } from "primereact/toolbar";
 import { useEffect } from "react";
 import { Button } from "primereact/button";
 import "../style.css";
-
+import { useSelector } from "react-redux";
 const HistoryPage = () => {
+  const user = useSelector((state) => state.user.user);
+  if (
+    !user ||
+    (user.UserType !== "BacSi" &&
+      user.UserType !== "YTa" &&
+      user.UserType !== "QuanTriVien")
+  ) {
+    return <div>Bạn không có quyền hạn truy cập trang này</div>;
+  }
   const { id } = useParams();
   const dataSource = [
     {

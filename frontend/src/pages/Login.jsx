@@ -9,14 +9,14 @@
 // import 'primeflex/primeflex.css';  // Đảm bảo đã import PrimeFlex
 
 // const Login = () => {
-//     const [email, setEmail] = useState('');
+//     const [username,setUsername] = useState('');
 //     const [password, setPassword] = useState('');
 //     const navigate = useNavigate();
 
 //     const handleSubmit = (e) => {
 //         e.preventDefault();
 //         // Xử lý logic đăng nhập ở đây
-//         console.log('Email:', email);
+//         console.log('Email:', username);
 //         console.log('Password:', password);
 //     };
 
@@ -32,14 +32,14 @@
 //                     <div className="field mb-4">
 //                         <span className="p-float-label p-input-icon-right">
 //                             <InputText
-//                                 id="email"
-//                                 value={email}
-//                                 onChange={(e) => setEmail(e.target.value)}
+//                                 id="username"
+//                                 value={username}
+//                                 onChange={(e) =>setUsername(e.target.value)}
 //                                 className="w-full"
 //                                 required
-//                                 placeholder="Nhập email của bạn"
+//                                 placeholder="Nhập username của bạn"
 //                             />
-//                             <label htmlFor="email">Email</label>
+//                             <label htmlFor="username">Email</label>
 //                         </span>
 //                     </div>
 
@@ -79,31 +79,54 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
+import { useDispatch } from "react-redux";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css"; // Đảm bảo đã import PrimeFlex
+import { AuthApi } from "../services/Auth";
+import { setUser } from "../redux/actions/userActions";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // Thêm state để lưu thông báo lỗi
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Kiểm tra nếu các trường để trống
-    if (!email || !password) {
+    if (!username || !password) {
       setError("Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
-    setError(""); // Reset lỗi nếu các trường hợp đều hợp lệ
+    try {
+      // Gửi yêu cầu đăng nhập qua API
+      const response = await AuthApi.login(username, password);
+      if (response.msg === "Login successful") {
+        // console.log("Login success:", response.user);
+        setError("");
+        dispatch(setUser(response.user));
 
-    // Xử lý logic đăng nhập ở đây
+        navigate("/nhan-vien");
+      } else {
+        setError(
+          response.mgs || "Đăng nhập không thành công. Vui lòng thử lại."
+        );
+      }
+    } catch (error) {
+      // Bắt lỗi từ API hoặc các vấn đề không mong muốn
 
-    // Giả sử đăng nhập thành công, bạn có thể điều hướng đến trang khác
-    navigate("/dashboard");
+      if (error.response.status === 401) {
+        setError("Sai tên đăng nhập hoặc mật khẩu. Vui lòng thử lại.");
+      } else {
+        setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+      }
+      //   setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+      //   console.error("Login error:", error);
+    }
   };
 
   return (
@@ -123,14 +146,14 @@ const Login = () => {
           <div className="field mb-4">
             <span className="p-float-label p-input-icon-right">
               <InputText
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full"
                 required
-                placeholder="Nhập email của bạn"
+                placeholder="Nhập username của bạn"
               />
-              <label htmlFor="email">Email</label>
+              <label htmlFor="username">Username</label>
             </span>
           </div>
 

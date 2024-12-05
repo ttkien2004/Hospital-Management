@@ -3,34 +3,34 @@ const bcrypt = require("bcrypt");
 
 // Register a new user
 const register = async (req, res) => {
-  const { username, password, userId } = req.body;
+  const { UserName, UserPassword, UserID } = req.body;
 
   try {
     const pool = await mssql.connect();
     const request = new mssql.Request(pool);
 
-    // Check if the username already exists
+    // Check if the UserName already exists
     const checkQuery =
-      "SELECT COUNT(*) AS count FROM [User] WHERE username = @username";
-    request.input("username", mssql.VarChar, username);
+      "SELECT COUNT(*) AS count FROM Users WHERE UserName = @UserName";
+    request.input("UserName", mssql.VarChar, UserName);
 
     const checkResult = await request.query(checkQuery);
 
     if (checkResult.recordset[0].count > 0) {
-      return res.status(400).json({ msg: "Username already exists" });
+      return res.status(400).json({ msg: "UserName already exists" });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the UserPassword
+    const hashedUserPassword = await bcrypt.hash(UserPassword, 10);
 
     // Insert the new user
     const insertQuery = `
-      INSERT INTO [User] (username, password, userId)
-      VALUES (@username, @password, @userId)
+      INSERT INTO Users (UserName, UserPassword, UserID)
+      VALUES (@UserName, @UserPassword, @UserID)
     `;
 
-    request.input("password", mssql.VarChar, hashedPassword);
-    request.input("userId", mssql.Char, userId);
+    request.input("UserPassword", mssql.VarChar, hashedUserPassword);
+    request.input("UserID", mssql.Char, UserID);
 
     await request.query(insertQuery);
 
@@ -43,7 +43,7 @@ const register = async (req, res) => {
 
 // User login
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { UserName, UserPassword } = req.body;
 
   try {
     const pool = await mssql.connect();
@@ -58,16 +58,16 @@ const login = async (req, res) => {
             WHEN bs.BsID IS NOT NULL THEN 'BacSi'
             WHEN yta.YtaID IS NOT NULL THEN 'YTa'
             ELSE 'Unknown'
-          END AS employeeType
-        FROM [User] u
-        INNER JOIN NhanVien nv ON u.userId = nv.ID
+          END AS UserType
+        FROM Users u
+        INNER JOIN NhanVien nv ON u.UserID = nv.ID
         LEFT JOIN QuanTriVien qtv ON nv.ID = qtv.QtvID
         LEFT JOIN DuocSi ds ON nv.ID = ds.DuocSiID
         LEFT JOIN BacSi bs ON nv.ID = bs.BsID
         LEFT JOIN YTa yta ON nv.ID = yta.YtaID
-        WHERE u.username = @username
+        WHERE u.UserName = @UserName
       `;
-    request.input("username", mssql.VarChar, username);
+    request.input("UserName", mssql.VarChar, UserName);
 
     const userResult = await request.query(userQuery);
 
@@ -78,21 +78,22 @@ const login = async (req, res) => {
     const user = userResult.recordset[0];
 
     // So sánh mật khẩu
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(UserPassword, user.UserPassword);
+    console.log(isMatch);
 
     if (!isMatch) {
-      return res.status(401).json({ msg: "Invalid username or password" });
+      return res.status(401).json({ msg: "Invalid UserName or UserPassword" });
     }
 
     // Trả về thông tin người dùng và loại nhân viên
     res.status(200).json({
       msg: "Login successful",
       user: {
-        username: user.username,
-        userId: user.userId,
+        UserName: user.UserName,
+        UserID: user.UserID,
         fullName: `${user.Ho} ${user.TEN}`,
         employeeId: user.ID,
-        employeeType: user.employeeType, // Trả về loại nhân viên
+        UserType: user.UserType, // Trả về loại nhân viên
       },
     });
   } catch (err) {

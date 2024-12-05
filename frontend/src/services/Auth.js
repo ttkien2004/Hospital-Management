@@ -2,12 +2,14 @@ import axiosClient from "../axios/axiosConfig";
 
 export const AuthApi = {
   // Login API
-  login: async (loginBody) => {
+  login: async (UserName, UserPassword) => {
+    const loginBody = {
+      UserName,
+      UserPassword,
+    };
     try {
       const response = await axiosClient.post("/auth/login", loginBody);
-      return {
-        data: response.data,
-      };
+      return response;
     } catch (err) {
       console.log(err.message);
       throw err;

@@ -89,15 +89,27 @@
 
 // export default Header;
 
-
 import { Sidebar } from "primereact/sidebar";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useEffect } from "react"; // Import useEffect từ react
+import { useSelector } from "react-redux"; // Import useSelector từ react-redux
+import { useDispatch } from "react-redux"; // Import useDispatch từ react-redux
+import { setUser } from "../redux/actions/userActions";
 const Header = () => {
   const [visible, setVisible] = useState(false);
-  const [showLogout, setShowLogout] = useState(false);  // Thêm state để điều khiển hiển thị nút Logout
+  const [showLogout, setShowLogout] = useState(false); // Thêm state để điều khiển hiển thị nút Logout
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
+
+  // Log user information
+  // console.log("User information:", user);
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
   const sidebar_contents = [
     {
       title: "Nhân viên bệnh viện",
@@ -115,9 +127,10 @@ const Header = () => {
 
   // Hàm để xử lý đăng xuất
   const handleLogout = () => {
-    console.log("Logging out...");
+    // console.log("Logging out...");
     // Logic xử lý đăng xuất (clear session, redirect to login page, v.v)
-    navigate("/login");  // Ví dụ: điều hướng về trang login sau khi đăng xuất
+    dispatch(setUser(null));
+    navigate("/login"); // Ví dụ: điều hướng về trang login sau khi đăng xuất
   };
 
   return (
@@ -185,9 +198,9 @@ const Header = () => {
           style={{
             cursor: "pointer", // Thêm hiệu ứng con trỏ
           }}
-          onClick={() => setShowLogout(!showLogout)}  // Bấm vào Username để toggle hiển thị Logout
+          onClick={() => setShowLogout(!showLogout)} // Bấm vào Username để toggle hiển thị Logout
         >
-          Username
+          {user?.fullName || ""} {/* Hiển thị tên người dùng */}
         </div>
 
         {/* Hiển thị nút Logout khi showLogout là true */}

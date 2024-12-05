@@ -6,6 +6,7 @@ import "primeicons/primeicons.css"; //icons
 import routes from "./routes";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
+import store from "./redux/store";
 
 function App() {
   return (
