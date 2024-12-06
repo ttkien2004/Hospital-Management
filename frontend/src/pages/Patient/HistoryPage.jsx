@@ -24,7 +24,7 @@ const HistoryPage = ({
     YtaID: "",
     Ho_va_ten: "",
   };
-  const { id } = useParams();
+
   // const [history, setHistory] = useState([]);
   const [prescription, setPrescription] = useState([]);
   const [selectedHistory, setSelectedHistory] = useState(initialHistory);
