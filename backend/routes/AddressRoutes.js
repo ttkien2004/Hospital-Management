@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllAddresses } = require("../controllers/ChiNhanh");
+const { getAllAddresses } = require("../controllers/Address");
 
 const router = express.Router();
 

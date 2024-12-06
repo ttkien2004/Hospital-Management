@@ -1,5 +1,6 @@
 import { APIOptions } from "primereact/api";
 import axiosClient from "../axios/axiosConfig";
+import axios from "axios";
 
 export interface ApiResponse<T> {
   data: T;
@@ -37,7 +38,7 @@ export const EquipmentApi = {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
   getEquipment: async (id: string): Promise<ApiResponse<EquipmentType>> => {
@@ -47,7 +48,7 @@ export const EquipmentApi = {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
   deleteEquipment: async (id: string) => {
@@ -61,40 +62,50 @@ export const EquipmentApi = {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
   updateEquipment: async (equipment: EquipmentType) => {
     try {
       const response = await axiosClient.patch("/equipment/updateEquipment", {
-        data: {
-          id: equipment.ID,
-          ten: equipment.Ten,
-          status: equipment.TinhTrang,
-          room: equipment.Phong,
-        },
+        id: equipment.ID,
+        ten: equipment.Ten,
+        status: equipment.TinhTrang,
+        room: equipment.Phong,
       });
       return {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
   createEquipment: async (equipment: EquipmentType) => {
     try {
       const response = await axiosClient.post("/equipment/createEquipment", {
-        data: {
-          ten: equipment.Ten,
-          status: equipment.TinhTrang,
-          room: equipment.Phong,
+        ten: equipment.Ten,
+        status: equipment.TinhTrang,
+        room: equipment.Phong,
+      });
+      return {
+        data: response.data,
+      };
+    } catch (err) {
+      throw err.response.data;
+    }
+  },
+  getAllHistory: async (TbID: string) => {
+    try {
+      const response = await axios.get("http://localhost:5000/MuonThietBi", {
+        params: {
+          Thiet_bi_id: TbID,
         },
       });
       return {
         data: response.data,
       };
     } catch (err) {
-      throw err;
+      throw err.response.data;
     }
   },
 };

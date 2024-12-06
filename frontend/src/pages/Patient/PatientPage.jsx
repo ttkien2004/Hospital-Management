@@ -6,7 +6,11 @@ import { Toolbar } from "primereact/toolbar";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
-import { useNavigate } from "react-router-dom";
+import { ScrollTop } from "primereact/scrolltop";
+import {
+  UNSAFE_getPatchRoutesOnNavigationFunction,
+  useNavigate,
+} from "react-router-dom";
 import { toast } from "react-toastify";
 import "../style.css";
 //
@@ -14,6 +18,8 @@ import { useEffect, useRef, useState } from "react";
 import { PatientApi } from "../../services/Patient";
 import moment from "moment";
 import { InputText } from "primereact/inputtext";
+import HistoryPage from "./HistoryPage";
+
 import { useSelector } from "react-redux";
 const PatientPage = () => {
   const user = useSelector((state) => state.user.user);
@@ -33,32 +39,41 @@ const PatientPage = () => {
     NgaySinh: "",
     GioiTinh: "",
     BHYT: "",
-    ChieuCao: "",
-    CanNang: "",
+    ChieuCao: 0,
+    CanNang: 0,
   };
   const [patients, setPatients] = useState([]);
   const [dialog, setDialog] = useState(false);
-  const [date, setDate] = useState("");
   const [gender, setGender] = useState("");
   const [patient, setPatient] = useState(initialPatient);
   const [isView, setIsView] = useState(true);
   const [isUpdate, setIsUpdate] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(initialPatient);
-  const dt = useRef(null);
-  const navigate = useNavigate();
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
 
-  // const dataSource = [
-  //   {
-  //     id: "123456789",
-  //     fname: "alo",
-  //     lname: "alo",
-  //     Bdate: "alo",
-  //     sex: "f",
-  //   },
-  // ];
+  const dt = useRef(null);
+  const tableCard = useRef(null);
+
   // handle crud
+  const randomStr = (field) => {
+    let result = field;
+    const digits = "0123456789";
+    for (let i = 0; i < 8 - field.length; i++) {
+      result += digits[Math.floor(Math.random() * digits.length)];
+    }
+    return result;
+  };
+  const checkEmptyAttribute = (patient) => {
+    const keysToCheck = ["Ho", "Ten"];
+    return keysToCheck.some((key) => patient[key] === "");
+  };
   const handleDelete = async (id) => {
+    if (id === "") {
+      toast.error("ID must not be empty string!");
+      return;
+    }
     try {
       console.log(id);
       const response = await PatientApi.deletePatient(id);
@@ -75,13 +90,20 @@ const PatientPage = () => {
     }
   };
   const handleCreate = async (patient) => {
+    if (checkEmptyAttribute(patient)) {
+      toast.error("Các thuộc tính bắt buộc phải được điền");
+      return;
+    }
     try {
+      console.log(patient);
       const response = await PatientApi.createNewPatient(patient);
 
       if (response) {
         toast.success("Thêm bệnh nhân mới thành công");
         setPatients([patient, ...patients]);
         setPatient(initialPatient);
+        setSubmitted(false);
+        setDialog(false);
       }
     } catch (err) {
       toast.error("Thêm thất bại");
@@ -90,22 +112,41 @@ const PatientPage = () => {
     }
   };
 
-  const editPatient = (rowData) => {
-    setPatient(rowData);
-  };
   const handleUpdate = async (newPatient) => {
+    if (checkEmptyAttribute(newPatient)) {
+      toast.error("Các thuộc tính bắt buộc phải được điền");
+      return;
+    }
     try {
       const response = await PatientApi.updatePatient(newPatient);
       if (response) {
         toast.success("Cập nhật thành công");
         let newPatients = patients.filter((p) => p.ID !== newPatient.ID);
         setPatients([newPatient, ...newPatients]);
-        setPatient(initialPatient);
       }
     } catch (err) {
       console.log(err);
       toast.error("Cập nhật thất bại");
       throw err;
+    }
+  };
+
+  const getAllHistory = async (Bnid) => {
+    try {
+      const response = await PatientApi.getHistoryTreatment(Bnid);
+
+      if (response) {
+        console.log(response.data.data);
+        setHistory(
+          response.data.data.map((item) => ({
+            ...item,
+            NgayKham: new Date(item.NgayKham),
+          }))
+        );
+      }
+    } catch (err) {
+      console.log(err.error);
+      toast.error(err.error);
     }
   };
 
@@ -121,6 +162,7 @@ const PatientPage = () => {
   ];
 
   const stringColumnDate = (rowData) => {
+    if (rowData.NgaySinh === "") return;
     return moment(rowData.NgaySinh).format("YYYY-MM-DD");
   };
   const dynamicColumns = columns.map((col, index) => {
@@ -133,6 +175,7 @@ const PatientPage = () => {
         alignHeader={"center"}
         align={"center"}
         body={col.field === "NgaySinh" && stringColumnDate}
+        sortable={col.field === "ChieuCao" || (col.field === "CanNang" && true)}
       ></Column>
     );
   });
@@ -144,7 +187,13 @@ const PatientPage = () => {
           icon="pi pi-address-book"
           tooltip="Xem lịch sử khám"
           tooltipOptions={{ position: "top" }}
-          onClick={() => navigate(`/patient/history-treatment/${rowData.ID}`)}
+          // onClick={() => navigate(`/patient/history-treatment/${rowData.ID}`)}
+          onClick={() => {
+            setPatient(rowData), getAllHistory(rowData.ID);
+            if (tableCard.current) {
+              tableCard.current.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
         ></Button>
         <Button
           icon="pi pi-user-edit"
@@ -173,6 +222,8 @@ const PatientPage = () => {
   };
 
   useEffect(() => {
+    setHistory([]);
+    setPatient(initialPatient);
     PatientApi.getPatients()
       .then((res) => {
         console.log(res.data);
@@ -195,15 +246,17 @@ const PatientPage = () => {
             setDialog(true),
               setIsView(false),
               setIsUpdate(false),
-              setPatient(initialPatient);
+              // setPatient(initialPatient);
+              setPatient({ ...initialPatient, ID: randomStr("BN") });
           }}
         ></Button>
         <Button
           label="Xóa bệnh nhân"
           severity="danger"
-          disabled={selectedPatient && selectedPatient.ID === "" ? true : false}
+          disabled={!selectedPatient ? true : false}
           onClick={() => {
             setDeleteDialog(true);
+            console.log(selectedPatient);
           }}
         ></Button>
       </>
@@ -212,17 +265,23 @@ const PatientPage = () => {
   const customFooter = () => {
     return (
       <>
-        <Button outlined label="Đóng" onClick={() => setDialog(false)}></Button>
+        <Button
+          outlined
+          label="Đóng"
+          onClick={() => {
+            setDialog(false), setSubmitted(false);
+          }}
+        ></Button>
         {!isView && (
           <Button
             label="Xác nhận"
             onClick={() => {
+              setSubmitted(true);
               if (isUpdate) {
                 handleUpdate(patient);
               } else {
                 handleCreate(patient);
               }
-              console.log(patient);
             }}
           ></Button>
         )}
@@ -230,220 +289,296 @@ const PatientPage = () => {
     );
   };
   return (
-    <Card
-      style={{
-        marginTop: "100px",
-        marginBottom: "100px",
-        marginLeft: "20px",
-        marginRight: "20px",
-      }}
-    >
-      <Toolbar start={startContent} style={{ marginBottom: "20px" }}></Toolbar>
-      <DataTable
-        dataKey={"ID"}
-        ref={dt}
-        value={patients}
-        selection={selectedPatient}
-        onSelectionChange={(e) => setSelectedPatient(e.value)}
-        tableStyle={{ minWidth: "60rem" }}
-        paginator
-        rows={10}
-        rowsPerPageOptions={[10, 20, 30]}
-        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+    <>
+      <Card
+        style={{
+          marginTop: "100px",
+          marginBottom: "100px",
+          marginLeft: "20px",
+          marginRight: "20px",
+        }}
       >
-        <Column selectionMode="single" headerStyle={{ width: "4rem" }}></Column>
-        {dynamicColumns}
-        <Column
-          header="Thao tác"
-          headerStyle={{ minWidth: "15rem" }}
-          alignHeader={"center"}
-          align={"center"}
-          body={actionTemplate}
-        ></Column>
-      </DataTable>
+        <Toolbar
+          start={startContent}
+          style={{ marginBottom: "20px" }}
+        ></Toolbar>
+        <DataTable
+          dataKey={"ID"}
+          ref={dt}
+          value={patients}
+          selection={selectedPatient}
+          onSelectionChange={(e) => {
+            setSelectedPatient(e.value);
+          }}
+          tableStyle={{ minWidth: "60rem" }}
+          paginator
+          rows={10}
+          rowsPerPageOptions={[10, 20, 30]}
+          paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+          currentPageReportTemplate="{first} đến {last} trong tất cả {totalRecords} bệnh nhân"
+          emptyMessage="Không tìm thấy dữ liệu nào của bệnh nhân"
+          removableSort
+        >
+          <Column
+            selectionMode="single"
+            headerStyle={{ width: "4rem" }}
+          ></Column>
+          {dynamicColumns}
+          <Column
+            header="Thao tác"
+            headerStyle={{ minWidth: "15rem" }}
+            alignHeader={"center"}
+            align={"center"}
+            body={actionTemplate}
+          ></Column>
+        </DataTable>
 
-      {/* Dialog thêm, xem bệnh nhân */}
-      <Dialog
-        header={
-          isView
-            ? "Xem thông tin chi tiết của bệnh nhân"
-            : isUpdate
-            ? "Thay đổi dữ liệu của bệnh nhân"
-            : "Thêm bệnh nhân"
-        }
-        style={{ width: "600px", height: "500px" }}
-        visible={dialog}
-        onHide={() => setDialog(false)}
-        footer={customFooter}
-      >
-        <div className="same-field">
-          <div className="field">
-            <label>Giới tính</label>
-            <div id="sex" style={{ display: "flex" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginRight: "10px",
-                }}
-              >
-                <RadioButton
-                  inputId="nam"
-                  value={patient.GioiTinh}
-                  onChange={(e) => {
-                    setGender(e.value);
-                    setPatient({ ...patient, GioiTinh: "M" });
+        {/* Dialog thêm, xem bệnh nhân */}
+        <Dialog
+          header={
+            isView
+              ? "Xem thông tin chi tiết của bệnh nhân"
+              : isUpdate
+              ? "Thay đổi dữ liệu của bệnh nhân"
+              : "Thêm bệnh nhân"
+          }
+          style={{ width: "600px", height: "800px" }}
+          visible={dialog}
+          onHide={() => setDialog(false)}
+          footer={customFooter}
+        >
+          <div className="same-field">
+            <div className="field">
+              <label>
+                Giới tính<span style={{ color: "red" }}>*</span>
+              </label>
+              <div id="sex" style={{ display: "flex" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginRight: "10px",
                   }}
-                  checked={patient.GioiTinh === "M"}
-                  disabled={isView ? true : false}
-                ></RadioButton>
-                <label htmlFor="nam" style={{ marginLeft: "10px" }}>
-                  Nam
-                </label>
-              </div>
+                >
+                  <RadioButton
+                    inputId="nam"
+                    value={patient.GioiTinh}
+                    onChange={(e) => {
+                      // setGender(e.value);
+                      setPatient({ ...patient, GioiTinh: "M" });
+                    }}
+                    checked={patient.GioiTinh === "M"}
+                    disabled={isView ? true : false}
+                    aria-describedby="sex-help"
+                  ></RadioButton>
+                  <label htmlFor="nam" style={{ marginLeft: "10px" }}>
+                    Nam
+                  </label>
+                </div>
 
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <RadioButton
-                  inputId="nu"
-                  value={patient.GioiTinh}
-                  onChange={(e) => {
-                    setGender(e.value);
-                    setPatient({ ...patient, GioiTinh: "F" });
-                  }}
-                  checked={patient.GioiTinh === "F"}
-                  disabled={isView ? true : false}
-                ></RadioButton>
-                <label htmlFor="nu" style={{ marginLeft: "10px" }}>
-                  Nữ
-                </label>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <RadioButton
+                    inputId="nu"
+                    value={patient.GioiTinh}
+                    onChange={(e) => {
+                      // setGender(e.value);
+                      setPatient({ ...patient, GioiTinh: "F" });
+                    }}
+                    checked={patient.GioiTinh === "F"}
+                    disabled={isView ? true : false}
+                    aria-describedby="sex-help"
+                  ></RadioButton>
+                  <label htmlFor="nu" style={{ marginLeft: "10px" }}>
+                    Nữ
+                  </label>
+                </div>
               </div>
+              {submitted && patient.GioiTinh === "" && (
+                <small
+                  id="sex-help"
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {"Bạn chưa chọn giới tính"}
+                </small>
+              )}
+            </div>
+            <div className="field">
+              <label htmlFor="bhyt">Bảo hiểm y tế</label>
+              <InputText
+                id="bhyt"
+                value={patient.BHYT === null ? "" : patient.BHYT}
+                onChange={(e) =>
+                  setPatient({ ...patient, BHYT: e.target.value })
+                }
+                disabled={isView ? true : false}
+              ></InputText>
             </div>
           </div>
-          <div className="field">
-            <label htmlFor="bhyt">Bảo hiểm y tế</label>
-            <InputText
-              id="bhyt"
-              value={patient.BHYT === null ? "" : patient.BHYT}
-              onChange={(e) => setPatient({ ...patient, BHYT: e.target.value })}
-              disabled={isView ? true : false}
-            ></InputText>
-          </div>
-        </div>
 
-        <div className="same-field">
-          <div className="field">
-            <label htmlFor="bn-id">ID</label>
-            <InputText
-              id="bn-id"
-              value={patient.ID}
-              onChange={(e) => setPatient({ ...patient, ID: e.target.value })}
-              disabled={isView ? true : false}
-            ></InputText>
+          <div className="same-field">
+            <div className="field">
+              <label htmlFor="bn-id">ID</label>
+              <InputText
+                id="bn-id"
+                value={patient.ID}
+                // onChange={(e) => setPatient({ ...patient, ID: e.target.value })}
+                // disabled={isView ? true : false}
+                disabled
+              ></InputText>
+            </div>
+            <div className="field">
+              <label htmlFor="cccd">Căn cước công dân</label>
+              <InputText
+                id="cccd"
+                value={patient.CCCD}
+                onChange={(e) =>
+                  setPatient({ ...patient, CCCD: e.target.value })
+                }
+                disabled={isView ? true : false}
+              ></InputText>
+            </div>
           </div>
-          <div className="field">
-            <label htmlFor="cccd">Căn cước công dân</label>
-            <InputText
-              id="cccd"
-              value={patient.CCCD}
-              onChange={(e) => setPatient({ ...patient, CCCD: e.target.value })}
-              disabled={isView ? true : false}
-            ></InputText>
-          </div>
-        </div>
 
-        <div className="same-field">
-          <div className="field">
-            <label htmlFor="ho">Họ và tên lót</label>
-            <InputText
-              value={patient.Ho}
-              onChange={(e) => setPatient({ ...patient, Ho: e.target.value })}
-              id="ho"
-              disabled={isView ? true : false}
-            ></InputText>
+          <div className="same-field">
+            <div className="field">
+              <label htmlFor="ho">
+                Họ và tên lót <span style={{ color: "red" }}>*</span>
+              </label>
+              <InputText
+                value={patient.Ho}
+                onChange={(e) => {
+                  setPatient({ ...patient, Ho: e.target.value });
+                }}
+                id="ho"
+                disabled={isView ? true : false}
+                aria-describedby="ho-help"
+                invalid={submitted && patient.Ho === "" ? true : false}
+              ></InputText>
+              {submitted && patient.Ho === "" && (
+                <small
+                  id="ho-help"
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {"Bạn chưa nhập thông tin"}
+                </small>
+              )}
+            </div>
+            <div className="field">
+              <label htmlFor="ten">
+                Tên <span style={{ color: "red" }}>*</span>
+              </label>
+              <InputText
+                value={patient.Ten}
+                onChange={(e) =>
+                  setPatient({ ...patient, Ten: e.target.value })
+                }
+                id="ten"
+                disabled={isView ? true : false}
+                aria-describedby="ten-help"
+                invalid={submitted && patient.Ten === "" ? true : false}
+              ></InputText>
+              {submitted && patient.Ten === "" && (
+                <small
+                  id="ten-help"
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {"Bạn chưa nhập thông tin"}
+                </small>
+              )}
+            </div>
           </div>
-          <div className="field">
-            <label htmlFor="ten">Tên</label>
-            <InputText
-              value={patient.Ten}
-              onChange={(e) => setPatient({ ...patient, Ten: e.target.value })}
-              id="ten"
-              disabled={isView ? true : false}
-            ></InputText>
-          </div>
-        </div>
 
-        <div className="field">
-          <label>Ngày sinh</label>
-          <Calendar
-            value={patient.NgaySinh ? new Date(patient.NgaySinh) : ""}
-            onChange={(e) =>
-              // setDate(moment(e.target.value).format("YYYY-MM-DD"))
-              setPatient({
-                ...patient,
-                NgaySinh: moment(e.target.value).format("YYYY-MM-DD"),
-              })
-            }
-            showIcon
-            disabled={isView ? true : false}
-          ></Calendar>
-        </div>
-
-        <div className="same-field">
           <div className="field">
-            <label htmlFor="height">Chiều cao (CM)</label>
-            <InputText
-              id="height"
-              value={patient.ChieuCao === null ? "" : patient.ChieuCao}
+            <label>Ngày sinh</label>
+            <Calendar
+              value={patient.NgaySinh ? new Date(patient.NgaySinh) : ""}
               onChange={(e) =>
-                setPatient({ ...patient, ChieuCao: e.target.value })
+                // setDate(moment(e.target.value).format("YYYY-MM-DD"))
+                setPatient({
+                  ...patient,
+                  NgaySinh: moment(e.target.value).format("YYYY-MM-DD"),
+                })
               }
+              showIcon
               disabled={isView ? true : false}
-            ></InputText>
+            ></Calendar>
           </div>
-          <div className="field">
-            <label htmlFor="weight">Cân nặng (Kg)</label>
-            <InputText
-              id="weight"
-              value={patient.CanNang === null ? "" : patient.CanNang}
-              onChange={(e) =>
-                setPatient({ ...patient, CanNang: e.target.value })
-              }
-              disabled={isView ? true : false}
-            ></InputText>
-          </div>
-        </div>
-      </Dialog>
 
-      {/* Dialog xác nhận xóa */}
-      <Dialog
-        header="Xác nhận xóa bệnh nhân"
-        visible={deleteDialog}
-        onHide={() => setDeleteDialog(false)}
-        footer={
-          <>
-            <Button
-              label="Đóng"
-              outlined
-              onClick={() => {
-                setDeleteDialog(false);
-              }}
-            ></Button>
-            <Button
-              label="Xác nhận"
-              severity="danger"
-              outlined
-              onClick={() => {
-                // console.log(patient.ID);
-                handleDelete(patient.ID);
-              }}
-            ></Button>
-          </>
-        }
-      >
-        <div>Bạn có muốn xóa dữ liệu của bệnh nhận này?</div>
-      </Dialog>
-    </Card>
+          <div className="same-field">
+            <div className="field">
+              <label htmlFor="height">Chiều cao (CM)</label>
+              <InputText
+                id="height"
+                value={patient.ChieuCao === null ? "" : patient.ChieuCao}
+                onChange={(e) =>
+                  setPatient({ ...patient, ChieuCao: e.target.value })
+                }
+                disabled={isView ? true : false}
+              ></InputText>
+            </div>
+            <div className="field">
+              <label htmlFor="weight">Cân nặng (Kg)</label>
+              <InputText
+                id="weight"
+                value={patient.CanNang === null ? "" : patient.CanNang}
+                onChange={(e) =>
+                  setPatient({ ...patient, CanNang: e.target.value })
+                }
+                disabled={isView ? true : false}
+              ></InputText>
+            </div>
+          </div>
+        </Dialog>
+
+        {/* Dialog xác nhận xóa */}
+        <Dialog
+          header="Xác nhận xóa bệnh nhân"
+          visible={deleteDialog}
+          onHide={() => setDeleteDialog(false)}
+          footer={
+            <>
+              <Button
+                label="Đóng"
+                outlined
+                onClick={() => {
+                  setDeleteDialog(false);
+                  setSubmitted(false);
+                }}
+              ></Button>
+              <Button
+                label="Xác nhận"
+                severity="danger"
+                outlined
+                onClick={() => {
+                  // console.log(patient.ID);
+                  handleDelete(selectedPatient.ID);
+                  setSelectedPatient(null);
+                  setDeleteDialog(false);
+                }}
+              ></Button>
+            </>
+          }
+        >
+          <div>Bạn có muốn xóa dữ liệu của bệnh nhận này?</div>
+        </Dialog>
+      </Card>
+
+      <HistoryPage
+        historyRef={tableCard}
+        patient={patient}
+        setPatient={setPatient}
+        history={history}
+        setHistory={setHistory}
+      />
+
+      <ScrollTop />
+    </>
   );
 };
 

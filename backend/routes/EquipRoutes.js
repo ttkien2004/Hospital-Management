@@ -15,7 +15,7 @@ const router = express.Router();
 router.get("/getAllEquipments", getAllEquipments);
 router.get("/getEquipment/:id", getEquipment);
 router.delete("/deleteEquipment", deleteEquipment);
-router.patch("/updateEquipment/:id", updateEquipment);
+router.patch("/updateEquipment", updateEquipment);
 router.post("/createEquipment", createEquipment);
 
 module.exports = router;
