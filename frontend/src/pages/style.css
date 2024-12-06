@@ -13,3 +13,17 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.status-field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  padding-top: 3.5px;
+  padding-bottom: 3.5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  width: 120px;
+}

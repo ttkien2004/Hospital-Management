@@ -11,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { Dropdown } from "primereact/dropdown";
 
 const EquipPage = () => {
   const initialEquipment = {
@@ -23,15 +24,19 @@ const EquipPage = () => {
     NguoiMuon: "",
   };
   const [data, setData] = useState([]);
-  const [selectedEquipments, setSelectedEquipments] =
-    useState(initialEquipment);
+  const [selectedEquipments, setSelectedEquipments] = useState(null);
   const [equipment, setEquipment] = useState(initialEquipment);
   const [equipments, setEquipments] = useState([]);
   const [isView, setIsView] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [visible, setVisible] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
-
+  const statusOptions = [
+    { label: "Hoạt động tốt", value: "Hoạt động tốt" },
+    { label: "Cần bảo trì", value: "Cần bảo trì" },
+    { label: "Hư hỏng", value: "Hư hỏng" },
+  ];
+  const [selectedStatus, setSelectedStatus] = useState("");
   const dt = useRef();
 
   // CRUD
@@ -45,7 +50,7 @@ const EquipPage = () => {
       }
     } catch (err) {
       console.log(err);
-      toast.error("Thêm thiết bị thất bại");
+      toast.error(err.error);
     }
   };
   const handleDelete = async (id) => {
@@ -58,7 +63,7 @@ const EquipPage = () => {
       }
     } catch (err) {
       console.log(err);
-      toast.error("Xóa thiết bị thất bại");
+      toast.error(err.error);
     }
   };
   const handleUpdate = async (newEquipment) => {
@@ -71,16 +76,16 @@ const EquipPage = () => {
       }
     } catch (err) {
       console.log(err);
-      toast.error("Cập nhật thiết bị thất bại");
+      toast.error(err.error);
     }
   };
 
   const columns = [
     { field: "ID", header: "Mã thiết bị" },
     { field: "Ten", header: "Tên thiết bị" },
-    { field: "TinhTrang", header: "Tình trạng" },
+    // { field: "TinhTrang", header: "Tình trạng" },
     { field: "Phong", header: "Phòng" },
-    { field: "NguoiMuon", header: "Người mượn" },
+    // { field: "TrangThaiMuon", header: "Trạng thái mượn" },
   ];
 
   const dynamicColumns = columns.map((col, index) => {
@@ -92,6 +97,7 @@ const EquipPage = () => {
         headerStyle={{ minWidth: "10rem" }}
         alignHeader={"center"}
         align={"center"}
+        sortable
       ></Column>
     );
   });
@@ -111,7 +117,7 @@ const EquipPage = () => {
         <Button
           label="Xóa thiết bị"
           severity="danger"
-          // disabled={selectedEquipments.length === 0 ? true : false}
+          disabled={!selectedEquipments ? true : false}
           onClick={() => {
             setDeleteDialog(true), setEquipment(selectedEquipments);
           }}
@@ -158,7 +164,9 @@ const EquipPage = () => {
         <Button
           outlined
           label="Đóng"
-          onClick={() => setVisible(false)}
+          onClick={() => {
+            setVisible(false), setSelectedStatus("");
+          }}
         ></Button>
         {!isView && (
           <Button
@@ -170,6 +178,7 @@ const EquipPage = () => {
                 console.log(equipment);
                 handleCreate(equipment);
               }
+              setSelectedStatus("");
             }}
           ></Button>
         )}
@@ -177,6 +186,49 @@ const EquipPage = () => {
     );
   };
 
+  const status = [
+    { name: "Hoạt động tốt" },
+    { name: "Cần bảo trì" },
+    { name: "Hư hỏng" },
+  ];
+  const statusFilterTemplate = (options) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={status}
+        itemTemplate={statusItemTemplate}
+        onChange={(e) => options.filterCallback(e.value.name)}
+        optionLabel="name"
+        placeholder="Chọn tình trạng"
+        className="p-column-filter"
+      />
+    );
+  };
+
+  const statusItemTemplate = (option) => {
+    return (
+      <div className="p-multiselect-representative-option">
+        <span className="image-text">{option.name}</span>
+      </div>
+    );
+  };
+
+  const statusBodyTemplate = (rowData) => {
+    return (
+      <span
+        className="status-field"
+        style={
+          rowData.TinhTrang === "Hoạt động tốt"
+            ? { backgroundColor: "rgb(34, 197, 94)" }
+            : rowData.TinhTrang === "Cần bảo trì"
+            ? { backgroundColor: "rgb(249, 115, 22)" }
+            : { backgroundColor: "red" }
+        }
+      >
+        {rowData.TinhTrang}
+      </span>
+    );
+  };
   useEffect(() => {
     EquipmentApi.getAllEquipments()
       .then((res) => {
@@ -208,24 +260,36 @@ const EquipPage = () => {
         rowsPerPageOptions={[10, 20, 30]}
         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        removableSort
       >
         <Column selectionMode="single" headerStyle={{ width: "4rem" }}></Column>
         {dynamicColumns}
-        <Column
+        {/* <Column
           header="Ngày mượn"
           field="NgayMuon"
           headerStyle={{ minWidth: "6rem" }}
           alignHeader={"center"}
           align={"center"}
           body={(rowData) => moment(rowData.NgayMuon).format("YYYY-MM-DD")}
-        ></Column>
-        <Column
+        ></Column> */}
+        {/* <Column
           header="Ngày trả"
           field="NgayTra"
           headerStyle={{ minWidth: "6rem" }}
           alignHeader={"center"}
           align={"center"}
           body={(rowData) => moment(rowData.NgayTra).format("YYYY-MM-DD")}
+        ></Column> */}
+        <Column
+          header="Tình trạng"
+          field="TinhTrang"
+          headerStyle={{ minWidth: "2rem" }}
+          filterField="TinhTrang"
+          showFilterMatchModes={false}
+          filterMenuStyle={{ width: "14rem" }}
+          body={statusBodyTemplate}
+          filter
+          filterElement={statusFilterTemplate}
         ></Column>
         <Column
           header="Thao tác"
@@ -248,7 +312,7 @@ const EquipPage = () => {
         visible={visible}
         onHide={() => setVisible(false)}
         footer={customFooter}
-        style={{ width: "600px", height: "650px" }}
+        style={{ width: "600px" }}
       >
         <div className="same-field">
           <div className="field">
@@ -272,14 +336,24 @@ const EquipPage = () => {
         <div className="same-field">
           <div className="field">
             <label htmlFor="status">Tình trạng</label>
-            <InputText
+            {/* <InputText
               id="status"
               value={equipment.TinhTrang}
               onChange={(e) =>
                 setEquipment({ ...equipment, TinhTrang: e.target.value })
               }
               disabled={isView ? true : false}
-            ></InputText>
+            ></InputText> */}
+            <Dropdown
+              value={selectedStatus}
+              options={statusOptions}
+              onChange={(e) => {
+                setSelectedStatus(e.value),
+                  setEquipment({ ...equipment, TinhTrang: e.value });
+              }}
+              placeholder="Chọn tình trạng của thiết bị"
+              style={{ width: "250px" }}
+            ></Dropdown>
           </div>
 
           <div className="field">
@@ -339,8 +413,8 @@ const EquipPage = () => {
               label="Xác nhận"
               severity="danger"
               onClick={() => {
-                console.log(selectedEquipments.ID);
                 handleDelete(selectedEquipments.ID);
+                setSelectedEquipments(null);
               }}
             ></Button>
           </>

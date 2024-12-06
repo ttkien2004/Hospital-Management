@@ -34,32 +34,18 @@ const PatientPage = () => {
   };
   const [patients, setPatients] = useState([]);
   const [dialog, setDialog] = useState(false);
-  const [date, setDate] = useState("");
   const [gender, setGender] = useState("");
   const [patient, setPatient] = useState(initialPatient);
   const [isView, setIsView] = useState(true);
   const [isUpdate, setIsUpdate] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(initialPatient);
-  const [historyView, setHistoryView] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [history, setHistory] = useState([]);
-  const [error, setError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const [generateId, setGenerateId] = useState("");
   const dt = useRef(null);
   const tableCard = useRef(null);
-  const navigate = useNavigate();
 
-  // const dataSource = [
-  //   {
-  //     id: "123456789",
-  //     fname: "alo",
-  //     lname: "alo",
-  //     Bdate: "alo",
-  //     sex: "f",
-  //   },
-  // ];
   // handle crud
   const randomStr = (field) => {
     let result = field;
@@ -141,7 +127,12 @@ const PatientPage = () => {
 
       if (response) {
         console.log(response.data.data);
-        setHistory(response.data.data);
+        setHistory(
+          response.data.data.map((item) => ({
+            ...item,
+            NgayKham: new Date(item.NgayKham),
+          }))
+        );
       }
     } catch (err) {
       console.log(err.error);
@@ -174,6 +165,7 @@ const PatientPage = () => {
         alignHeader={"center"}
         align={"center"}
         body={col.field === "NgaySinh" && stringColumnDate}
+        sortable={col.field === "ChieuCao" || (col.field === "CanNang" && true)}
       ></Column>
     );
   });
@@ -251,9 +243,10 @@ const PatientPage = () => {
         <Button
           label="Xóa bệnh nhân"
           severity="danger"
-          disabled={selectedPatient && selectedPatient.ID === "" ? true : false}
+          disabled={!selectedPatient ? true : false}
           onClick={() => {
             setDeleteDialog(true);
+            console.log(selectedPatient);
           }}
         ></Button>
       </>
@@ -304,7 +297,9 @@ const PatientPage = () => {
           ref={dt}
           value={patients}
           selection={selectedPatient}
-          onSelectionChange={(e) => setSelectedPatient(e.value)}
+          onSelectionChange={(e) => {
+            setSelectedPatient(e.value);
+          }}
           tableStyle={{ minWidth: "60rem" }}
           paginator
           rows={10}
@@ -312,6 +307,7 @@ const PatientPage = () => {
           paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
           currentPageReportTemplate="{first} to {last} of {totalRecords}"
           emptyMessage="Không tìm thấy dữ liệu nào của bệnh nhân"
+          removableSort
         >
           <Column
             selectionMode="single"
@@ -343,7 +339,9 @@ const PatientPage = () => {
         >
           <div className="same-field">
             <div className="field">
-              <label>Giới tính</label>
+              <label>
+                Giới tính<span style={{ color: "red" }}>*</span>
+              </label>
               <div id="sex" style={{ display: "flex" }}>
                 <div
                   style={{
@@ -361,6 +359,7 @@ const PatientPage = () => {
                     }}
                     checked={patient.GioiTinh === "M"}
                     disabled={isView ? true : false}
+                    aria-describedby="sex-help"
                   ></RadioButton>
                   <label htmlFor="nam" style={{ marginLeft: "10px" }}>
                     Nam
@@ -377,12 +376,23 @@ const PatientPage = () => {
                     }}
                     checked={patient.GioiTinh === "F"}
                     disabled={isView ? true : false}
+                    aria-describedby="sex-help"
                   ></RadioButton>
                   <label htmlFor="nu" style={{ marginLeft: "10px" }}>
                     Nữ
                   </label>
                 </div>
               </div>
+              {submitted && !gender && (
+                <small
+                  id="sex-help"
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {"Bạn chưa chọn giới tính"}
+                </small>
+              )}
             </div>
             <div className="field">
               <label htmlFor="bhyt">Bảo hiểm y tế</label>
@@ -538,6 +548,8 @@ const PatientPage = () => {
                 onClick={() => {
                   // console.log(patient.ID);
                   handleDelete(selectedPatient.ID);
+                  setSelectedPatient(null);
+                  setDeleteDialog(false);
                 }}
               ></Button>
             </>

@@ -9,9 +9,9 @@ import { useState } from "react";
 import moment from "moment";
 import "../style.css";
 import { Dialog } from "primereact/dialog";
-import { Panel } from "primereact/panel";
 import { toast } from "react-toastify";
 import { InputText } from "primereact/inputtext";
+import { Calendar } from "primereact/calendar";
 
 const HistoryPage = ({
   historyRef,
@@ -44,7 +44,7 @@ const HistoryPage = ({
   };
 
   const columns = [
-    { field: "NgayKham", header: "Ngày khám" },
+    // { field: "NgayKham", header: "Ngày khám" },
     { field: "ChiSoSucKhoe", header: "Chỉ số sức khỏe" },
     { field: "YtaID", header: "Y tá" },
     { field: "Ho_va_ten", header: "Họ và tên y tá" },
@@ -85,7 +85,7 @@ const HistoryPage = ({
         headerStyle={{ minWidth: "10rem" }}
         alignHeader={"center"}
         align={"center"}
-        body={col.field === "NgayKham" && stringColumnDate}
+        // body={col.field === "NgayKham" && stringColumnDate}
       ></Column>
     );
   });
@@ -142,6 +142,22 @@ const HistoryPage = ({
       <>
         <Button label="Đóng lịch sử khám"></Button>
       </>
+    );
+  };
+
+  const dateBodyTemplate = (rowData) => {
+    return moment(rowData.NgayKham).format("YYYY-MM-DD");
+  };
+  const dateFilterTemplate = (options) => {
+    return (
+      <Calendar
+        value={options.value}
+        onChange={(e) => options.filterCallback(e.value, options.index)}
+        dateFormat="yy-mm-dd"
+        placeholder="yyyy-mm-dd"
+        mask="9999-99-99"
+        showIcon
+      />
     );
   };
 
@@ -257,6 +273,15 @@ const HistoryPage = ({
               : `Thông tin lịch sử khám của bệnh nhân ${patient.Ho} ${patient.Ten}`
           }
         >
+          <Column
+            header="Ngày khám"
+            field="NgayKham"
+            style={{ minWidth: "10rem" }}
+            body={dateBodyTemplate}
+            filter
+            filterElement={dateFilterTemplate}
+            dataType="date"
+          ></Column>
           {dynamicColumns}
           <Column
             header="Thao tác"
