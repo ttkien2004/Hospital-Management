@@ -424,7 +424,9 @@ const EquipPage = () => {
               disabled={isView ? true : false}
             ></InputText> */}
               <Dropdown
-                value={selectedStatus}
+                value={
+                  !isView && !isUpdate ? selectedStatus : equipment.TinhTrang
+                }
                 options={statusOptions}
                 onChange={(e) => {
                   setSelectedStatus(e.value),
@@ -432,6 +434,7 @@ const EquipPage = () => {
                 }}
                 placeholder="Chọn tình trạng của thiết bị"
                 style={{ width: "250px" }}
+                disabled={isView ? true : false}
                 aria-describedby="status-help"
                 invalid={submitted && equipment.TinhTrang === "" ? true : false}
               ></Dropdown>
