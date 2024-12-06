@@ -37,7 +37,7 @@ const Login = () => {
         setError("");
         dispatch(setUser(response.user));
 
-        navigate("/nhan-vien");
+        navigate("/patient");
       } else {
         setError(
           response.mgs || "Đăng nhập không thành công. Vui lòng thử lại."

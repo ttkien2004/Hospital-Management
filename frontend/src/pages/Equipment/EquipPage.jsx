@@ -70,7 +70,7 @@ const EquipPage = () => {
       const response = await EquipmentApi.createEquipment(equipment);
       if (response) {
         toast.success("Thêm thiết bị mới thành công");
-        setEquipments([equipment, ...equipments]);
+        setEquipments([response.data, ...equipments]);
         setEquipment(initialEquipment);
         setSubmitted(false);
       }

@@ -112,10 +112,6 @@ const Header = () => {
   }, [user, navigate]);
   const sidebar_contents = [
     {
-      title: "Nhân viên bệnh viện",
-      link: "/nhan-vien",
-    },
-    {
       title: "Danh sách bệnh nhân",
       link: "/patient",
     },

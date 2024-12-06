@@ -3,7 +3,6 @@ import DefaultLayout from "./layout/DefaultLayout";
 import ErrorBoundary from "./layout/ErrorBoundary";
 import React, { Suspense } from "react";
 
-const EmpPage = React.lazy(() => import("./pages/Employee/EmpPage"));
 const PatientPage = React.lazy(() => import("./pages/Patient/PatientPage"));
 const EquipPage = React.lazy(() => import("./pages/Equipment/EquipPage"));
 const Login = React.lazy(() => import("./pages/Login"));
@@ -28,14 +27,6 @@ const routes = [
     element: (
       <Suspense fallback={<div>Loading Register Page...</div>}>
         <Register />
-      </Suspense>
-    ),
-  },
-  {
-    path: "nhan-vien",
-    element: (
-      <Suspense fallback={<div>Loading Employee Page...</div>}>
-        <EmpPage />
       </Suspense>
     ),
   },

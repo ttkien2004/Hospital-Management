@@ -69,6 +69,7 @@ async function connectToDatabase() {
 app.get("/LayLichSuKham", async (req, res) => {
   try {
     const { id } = req.query;
+    console.log(id);
     if (id === null) {
       return res.status(400).json({ error: "ID must not be empty or null" });
     } else if (!id.startsWith("BN")) {
