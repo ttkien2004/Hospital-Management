@@ -81,7 +81,7 @@ app.get("/LayLichSuKham", async (req, res) => {
   }
 });
 
-app.use("/LayDonThuoc", async (req, res) => {
+app.get("/LayDonThuoc", async (req, res) => {
   try {
     const { bn_id, date } = req.query;
     if (bn_id === null) {
@@ -106,20 +106,32 @@ app.use("/LayDonThuoc", async (req, res) => {
   }
 });
 
-// async function callFunction() {
-//   try {
-//     const pool = await mssql.connect(config);
-//     const result = await pool
-//       .request()
-//       .query("SELECT * FROM dbo.GetDiseases(N'mệt mỏi')");
+app.get("/MuonThietBi", async (req, res) => {
+  const { Thiet_bi_id } = req.query;
+  if (Thiet_bi_id === null) {
+    return res
+      .status(400)
+      .json({ error: "ID không được phép mang giá trị null" });
+  }
+  if (Thiet_bi_id < 0) {
+    return res.status(400).json({
+      error: "Mã thiết bị không hợp lệ, bắt buộc là số nguyên lớn hơn 0",
+    });
+  }
+  try {
+    const pool = await mssql.connect(config);
+    const query = "SELECT * FROM dbo.MuonThietBi(@Thiet_bi_id)";
+    const result = await pool
+      .request()
+      .input("Thiet_bi_id", mssql.Int, Thiet_bi_id)
+      .query(query);
 
-//     console.log(result.recordset);
-//   } catch (err) {
-//     return res.status(400).json({ msg: "Can not call function" });
-//   } finally {
-//     await mssql.close();
-//   }
-// }
+    return res.status(200).json({ data: result.recordset });
+  } catch {
+  } finally {
+    await mssql.close();
+  }
+});
 
 app.get("/", async (req, res) => {
   // Execute a SELECT query

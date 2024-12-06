@@ -12,6 +12,8 @@ import { Calendar } from "primereact/calendar";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { Dropdown } from "primereact/dropdown";
+import HistoryPage from "./HistoryPage";
+import { ScrollTop } from "primereact/scrolltop";
 
 const EquipPage = () => {
   const initialEquipment = {
@@ -32,6 +34,8 @@ const EquipPage = () => {
   const [visible, setVisible] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [history, setHistory] = useState([]);
+
   const statusOptions = [
     { label: "Hoạt động tốt", value: "Hoạt động tốt" },
     { label: "Cần bảo trì", value: "Cần bảo trì" },
@@ -39,6 +43,7 @@ const EquipPage = () => {
   ];
   const [selectedStatus, setSelectedStatus] = useState("");
   const dt = useRef();
+  const tableCard = useRef(null);
 
   // CRUD
   const checkEmptyAttribute = (equip) => {
@@ -91,11 +96,29 @@ const EquipPage = () => {
     }
   };
 
+  const getAllHistory = async (TbID) => {
+    try {
+      const response = await EquipmentApi.getAllHistory(TbID);
+      if (response) {
+        setHistory(
+          response.data.data.map((item) => ({
+            ...item,
+            NgayMuon: new Date(item.Ngay_muon),
+            NgayTra: new Date(item.Ngay_tra),
+          }))
+        );
+      }
+    } catch (err) {
+      toast.error(err.error);
+    }
+  };
+
   const columns = [
     { field: "ID", header: "Mã thiết bị" },
     { field: "Ten", header: "Tên thiết bị" },
     // { field: "TinhTrang", header: "Tình trạng" },
     { field: "Phong", header: "Phòng" },
+    { field: "TrangThaiMuon", header: "Trạng thái mượn" },
     // { field: "TrangThaiMuon", header: "Trạng thái mượn" },
   ];
 
@@ -140,6 +163,17 @@ const EquipPage = () => {
   const actionTemplate = (rowData) => {
     return (
       <>
+        <Button
+          icon="pi pi-history"
+          tooltip="Xem lịch sử mượn"
+          tooltipOptions={{ position: "top" }}
+          onClick={() => {
+            getAllHistory(rowData.ID);
+            if (tableCard.current) {
+              tableCard.current.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+        ></Button>
         <Button
           severity="secondary"
           icon="pi pi-pencil"
@@ -251,32 +285,39 @@ const EquipPage = () => {
       });
   }, []);
   return (
-    <Card
-      style={{
-        marginTop: "100px",
-        marginBottom: "100px",
-        marginLeft: "20px",
-        marginRight: "20px",
-      }}
-    >
-      <Toolbar start={startContent} style={{ marginBottom: "20px" }}></Toolbar>
-      <DataTable
-        ref={dt}
-        dataKey={"ID"}
-        value={equipments}
-        selection={selectedEquipments}
-        onSelectionChange={(e) => setSelectedEquipments(e.value)}
-        tableStyle={{ minWidth: "60rem" }}
-        paginator
-        rows={10}
-        rowsPerPageOptions={[10, 20, 30]}
-        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        removableSort
+    <>
+      <Card
+        style={{
+          marginTop: "100px",
+          marginBottom: "100px",
+          marginLeft: "20px",
+          marginRight: "20px",
+        }}
       >
-        <Column selectionMode="single" headerStyle={{ width: "4rem" }}></Column>
-        {dynamicColumns}
-        {/* <Column
+        <Toolbar
+          start={startContent}
+          style={{ marginBottom: "20px" }}
+        ></Toolbar>
+        <DataTable
+          ref={dt}
+          dataKey={"ID"}
+          value={equipments}
+          selection={selectedEquipments}
+          onSelectionChange={(e) => setSelectedEquipments(e.value)}
+          tableStyle={{ minWidth: "60rem" }}
+          paginator
+          rows={10}
+          rowsPerPageOptions={[10, 20, 30]}
+          paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          removableSort
+        >
+          <Column
+            selectionMode="single"
+            headerStyle={{ width: "4rem" }}
+          ></Column>
+          {dynamicColumns}
+          {/* <Column
           header="Ngày mượn"
           field="NgayMuon"
           headerStyle={{ minWidth: "6rem" }}
@@ -284,7 +325,7 @@ const EquipPage = () => {
           align={"center"}
           body={(rowData) => moment(rowData.NgayMuon).format("YYYY-MM-DD")}
         ></Column> */}
-        {/* <Column
+          {/* <Column
           header="Ngày trả"
           field="NgayTra"
           headerStyle={{ minWidth: "6rem" }}
@@ -292,79 +333,79 @@ const EquipPage = () => {
           align={"center"}
           body={(rowData) => moment(rowData.NgayTra).format("YYYY-MM-DD")}
         ></Column> */}
-        <Column
-          header="Tình trạng"
-          field="TinhTrang"
-          headerStyle={{ minWidth: "2rem" }}
-          filterField="TinhTrang"
-          showFilterMatchModes={false}
-          filterMenuStyle={{ width: "14rem" }}
-          body={statusBodyTemplate}
-          filter
-          filterElement={statusFilterTemplate}
-        ></Column>
-        <Column
-          header="Thao tác"
-          headerStyle={{ minWidth: "12rem" }}
-          alignHeader={"center"}
-          align={"center"}
-          body={actionTemplate}
-        ></Column>
-      </DataTable>
+          <Column
+            header="Tình trạng"
+            field="TinhTrang"
+            headerStyle={{ minWidth: "2rem" }}
+            filterField="TinhTrang"
+            showFilterMatchModes={false}
+            filterMenuStyle={{ width: "14rem" }}
+            body={statusBodyTemplate}
+            filter
+            filterElement={statusFilterTemplate}
+          ></Column>
+          <Column
+            header="Thao tác"
+            headerStyle={{ minWidth: "12rem" }}
+            alignHeader={"center"}
+            align={"center"}
+            body={actionTemplate}
+          ></Column>
+        </DataTable>
 
-      {/* Dialog thêm, xem, cập nhật */}
-      <Dialog
-        header={
-          isView
-            ? "Xem thông tin thiết bị"
-            : isUpdate
-            ? "Cập nhật thông tin thiết bị"
-            : "Thêm thiết bị mới"
-        }
-        visible={visible}
-        onHide={() => setVisible(false)}
-        footer={customFooter}
-        style={{ width: "600px" }}
-      >
-        <div className="same-field">
-          <div className="field">
-            <label htmlFor="id">Mã thiết bị</label>
-            <InputText id="id" value={equipment.ID} disabled></InputText>
+        {/* Dialog thêm, xem, cập nhật */}
+        <Dialog
+          header={
+            isView
+              ? "Xem thông tin thiết bị"
+              : isUpdate
+              ? "Cập nhật thông tin thiết bị"
+              : "Thêm thiết bị mới"
+          }
+          visible={visible}
+          onHide={() => setVisible(false)}
+          footer={customFooter}
+          style={{ width: "600px" }}
+        >
+          <div className="same-field">
+            <div className="field">
+              <label htmlFor="id">Mã thiết bị</label>
+              <InputText id="id" value={equipment.ID} disabled></InputText>
+            </div>
+
+            <div className="field">
+              <label htmlFor="name">
+                Tên thiết bị <span style={{ color: "red" }}>*</span>
+              </label>
+              <InputText
+                id="name"
+                value={equipment.Ten}
+                onChange={(e) =>
+                  setEquipment({ ...equipment, Ten: e.target.value })
+                }
+                disabled={isView ? true : false}
+                aria-describedby="ten-help"
+                invalid={submitted && equipment.Ten === "" ? true : false}
+              ></InputText>
+              {submitted && equipment.Ten === "" && (
+                <small
+                  id="ten-help"
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {"Bạn chưa nhập thông tin tên"}
+                </small>
+              )}
+            </div>
           </div>
 
-          <div className="field">
-            <label htmlFor="name">
-              Tên thiết bị <span style={{ color: "red" }}>*</span>
-            </label>
-            <InputText
-              id="name"
-              value={equipment.Ten}
-              onChange={(e) =>
-                setEquipment({ ...equipment, Ten: e.target.value })
-              }
-              disabled={isView ? true : false}
-              aria-describedby="ten-help"
-              invalid={submitted && equipment.Ten === "" ? true : false}
-            ></InputText>
-            {submitted && equipment.Ten === "" && (
-              <small
-                id="ten-help"
-                style={{
-                  color: "red",
-                }}
-              >
-                {"Bạn chưa nhập thông tin tên"}
-              </small>
-            )}
-          </div>
-        </div>
-
-        <div className="same-field">
-          <div className="field">
-            <label htmlFor="status">
-              Tình trạng <span style={{ color: "red" }}>*</span>
-            </label>
-            {/* <InputText
+          <div className="same-field">
+            <div className="field">
+              <label htmlFor="status">
+                Tình trạng <span style={{ color: "red" }}>*</span>
+              </label>
+              {/* <InputText
               id="status"
               value={equipment.TinhTrang}
               onChange={(e) =>
@@ -372,85 +413,95 @@ const EquipPage = () => {
               }
               disabled={isView ? true : false}
             ></InputText> */}
-            <Dropdown
-              value={selectedStatus}
-              options={statusOptions}
-              onChange={(e) => {
-                setSelectedStatus(e.value),
-                  setEquipment({ ...equipment, TinhTrang: e.value });
-              }}
-              placeholder="Chọn tình trạng của thiết bị"
-              style={{ width: "250px" }}
-              aria-describedby="status-help"
-              invalid={submitted && equipment.TinhTrang === "" ? true : false}
-            ></Dropdown>
-            {submitted && equipment.TinhTrang === "" && (
-              <small
-                id="status-help"
-                style={{
-                  color: "red",
+              <Dropdown
+                value={selectedStatus}
+                options={statusOptions}
+                onChange={(e) => {
+                  setSelectedStatus(e.value),
+                    setEquipment({ ...equipment, TinhTrang: e.value });
                 }}
-              >
-                {"Bạn chưa chọn"}
-              </small>
-            )}
-          </div>
+                placeholder="Chọn tình trạng của thiết bị"
+                style={{ width: "250px" }}
+                aria-describedby="status-help"
+                invalid={submitted && equipment.TinhTrang === "" ? true : false}
+              ></Dropdown>
+              {submitted && equipment.TinhTrang === "" && (
+                <small
+                  id="status-help"
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {"Bạn chưa chọn"}
+                </small>
+              )}
+            </div>
 
-          <div className="field">
-            <label htmlFor="room">
-              Phòng <span style={{ color: "red" }}>*</span>
-            </label>
-            <InputText
-              id="room"
-              value={equipment.Phong}
-              onChange={(e) =>
-                setEquipment({ ...equipment, Phong: e.target.value })
-              }
-              disabled={isView ? true : false}
-              aria-describedby="room-help"
-              invalid={submitted && equipment.Phong === "" ? true : false}
-            ></InputText>
-            {submitted && equipment.Phong === "" && (
-              <small
-                id="room-help"
-                style={{
-                  color: "red",
+            <div className="field">
+              <label htmlFor="room">
+                Phòng <span style={{ color: "red" }}>*</span>
+              </label>
+              <InputText
+                id="room"
+                value={equipment.Phong}
+                onChange={(e) =>
+                  setEquipment({ ...equipment, Phong: e.target.value })
+                }
+                disabled={isView ? true : false}
+                aria-describedby="room-help"
+                invalid={submitted && equipment.Phong === "" ? true : false}
+              ></InputText>
+              {submitted && equipment.Phong === "" && (
+                <small
+                  id="room-help"
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {"Bạn chưa nhập thông tin phòng"}
+                </small>
+              )}
+            </div>
+          </div>
+        </Dialog>
+
+        {/* Dialog xác nhận xóa */}
+        <Dialog
+          header="Xác nhận xóa thiết bị"
+          visible={deleteDialog}
+          onHide={() => setDeleteDialog(false)}
+          style={{ width: "500px", height: "200px" }}
+          footer={() => (
+            <>
+              <Button
+                label="Hủy"
+                outlined
+                onClick={() => setDeleteDialog(false)}
+              ></Button>
+              <Button
+                label="Xác nhận"
+                severity="danger"
+                onClick={() => {
+                  handleDelete(selectedEquipments.ID);
+                  setSelectedEquipments(null);
                 }}
-              >
-                {"Bạn chưa nhập thông tin phòng"}
-              </small>
-            )}
-          </div>
-        </div>
-      </Dialog>
+              ></Button>
+            </>
+          )}
+        >
+          <div>Bạn có muốn xóa thiết bị này?</div>
+        </Dialog>
+      </Card>
+      <HistoryPage
+        history={history}
+        setHistory={setHistory}
+        historyRef={tableCard}
+        equipment={equipment}
+        setEquipment={setEquipment}
+      />
 
-      {/* Dialog xác nhận xóa */}
-      <Dialog
-        header="Xác nhận xóa thiết bị"
-        visible={deleteDialog}
-        onHide={() => setDeleteDialog(false)}
-        style={{ width: "500px", height: "200px" }}
-        footer={() => (
-          <>
-            <Button
-              label="Hủy"
-              outlined
-              onClick={() => setDeleteDialog(false)}
-            ></Button>
-            <Button
-              label="Xác nhận"
-              severity="danger"
-              onClick={() => {
-                handleDelete(selectedEquipments.ID);
-                setSelectedEquipments(null);
-              }}
-            ></Button>
-          </>
-        )}
-      >
-        <div>Bạn có muốn xóa thiết bị này?</div>
-      </Dialog>
-    </Card>
+      <ScrollTop />
+    </>
   );
 };
 

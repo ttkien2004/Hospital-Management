@@ -2,7 +2,6 @@ import { Card } from "primereact/card";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import { Button } from "primereact/button";
 import { PatientApi } from "../../services/Patient";
 import { useState } from "react";
@@ -10,7 +9,6 @@ import moment from "moment";
 import "../style.css";
 import { Dialog } from "primereact/dialog";
 import { toast } from "react-toastify";
-import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 
 const HistoryPage = ({
@@ -133,14 +131,6 @@ const HistoryPage = ({
           tooltip="Xem thông tin lịch sử khám"
           tooltipOptions={{ position: "top" }}
         ></Button>
-      </>
-    );
-  };
-
-  const startContent = () => {
-    return (
-      <>
-        <Button label="Đóng lịch sử khám"></Button>
       </>
     );
   };
