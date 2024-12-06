@@ -31,6 +31,7 @@ const EquipPage = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [visible, setVisible] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const statusOptions = [
     { label: "Hoạt động tốt", value: "Hoạt động tốt" },
     { label: "Cần bảo trì", value: "Cần bảo trì" },
@@ -40,13 +41,23 @@ const EquipPage = () => {
   const dt = useRef();
 
   // CRUD
+  const checkEmptyAttribute = (equip) => {
+    const keysToCheck = ["Ten", "TinhTrang", "Phong"];
+    return keysToCheck.some((key) => equip[key] === "");
+  };
+
   const handleCreate = async (equipment) => {
+    if (checkEmptyAttribute(equipment)) {
+      toast.error("Các trường bắt buộc phải được điền");
+      return;
+    }
     try {
       const response = await EquipmentApi.createEquipment(equipment);
       if (response) {
         toast.success("Thêm thiết bị mới thành công");
         setEquipments([equipment, ...equipments]);
         setEquipment(initialEquipment);
+        setSubmitted(false);
       }
     } catch (err) {
       console.log(err);
@@ -165,13 +176,14 @@ const EquipPage = () => {
           outlined
           label="Đóng"
           onClick={() => {
-            setVisible(false), setSelectedStatus("");
+            setVisible(false), setSelectedStatus(""), setSubmitted(false);
           }}
         ></Button>
         {!isView && (
           <Button
             label="Xác nhận"
             onClick={() => {
+              setSubmitted(true);
               if (isUpdate) {
                 handleUpdate(equipment);
               } else {
@@ -321,7 +333,9 @@ const EquipPage = () => {
           </div>
 
           <div className="field">
-            <label htmlFor="name">Tên thiết bị</label>
+            <label htmlFor="name">
+              Tên thiết bị <span style={{ color: "red" }}>*</span>
+            </label>
             <InputText
               id="name"
               value={equipment.Ten}
@@ -329,13 +343,27 @@ const EquipPage = () => {
                 setEquipment({ ...equipment, Ten: e.target.value })
               }
               disabled={isView ? true : false}
+              aria-describedby="ten-help"
+              invalid={submitted && equipment.Ten === "" ? true : false}
             ></InputText>
+            {submitted && equipment.Ten === "" && (
+              <small
+                id="ten-help"
+                style={{
+                  color: "red",
+                }}
+              >
+                {"Bạn chưa nhập thông tin tên"}
+              </small>
+            )}
           </div>
         </div>
 
         <div className="same-field">
           <div className="field">
-            <label htmlFor="status">Tình trạng</label>
+            <label htmlFor="status">
+              Tình trạng <span style={{ color: "red" }}>*</span>
+            </label>
             {/* <InputText
               id="status"
               value={equipment.TinhTrang}
@@ -353,11 +381,25 @@ const EquipPage = () => {
               }}
               placeholder="Chọn tình trạng của thiết bị"
               style={{ width: "250px" }}
+              aria-describedby="status-help"
+              invalid={submitted && equipment.TinhTrang === "" ? true : false}
             ></Dropdown>
+            {submitted && equipment.TinhTrang === "" && (
+              <small
+                id="status-help"
+                style={{
+                  color: "red",
+                }}
+              >
+                {"Bạn chưa chọn"}
+              </small>
+            )}
           </div>
 
           <div className="field">
-            <label htmlFor="room">Phòng</label>
+            <label htmlFor="room">
+              Phòng <span style={{ color: "red" }}>*</span>
+            </label>
             <InputText
               id="room"
               value={equipment.Phong}
@@ -365,35 +407,21 @@ const EquipPage = () => {
                 setEquipment({ ...equipment, Phong: e.target.value })
               }
               disabled={isView ? true : false}
+              aria-describedby="room-help"
+              invalid={submitted && equipment.Phong === "" ? true : false}
             ></InputText>
+            {submitted && equipment.Phong === "" && (
+              <small
+                id="room-help"
+                style={{
+                  color: "red",
+                }}
+              >
+                {"Bạn chưa nhập thông tin phòng"}
+              </small>
+            )}
           </div>
         </div>
-
-        {/* <div className="field">
-          <label>Ngày mượn</label>
-          <Calendar
-            showIcon
-            value={
-              equipment.ThoiGianMuon ? new Date(equipment.ThoiGianMuon) : ""
-            }
-            onChange={(e) => {
-              setEquipment({ ...equipment, ThoiGianMuon: e.value });
-            }}
-          ></Calendar>
-        </div>
-
-        <div className="field">
-          <label>Ngày trả</label>
-          <Calendar
-            showIcon
-            value={
-              equipment.ThoiGianTra ? new Date(equipment.ThoiGianTra) : ""
-            }
-            onChange={(e) => {
-              setEquipment({ ...equipment, ThoiGianTra: e.value });
-            }}
-          ></Calendar>
-        </div>         */}
       </Dialog>
 
       {/* Dialog xác nhận xóa */}

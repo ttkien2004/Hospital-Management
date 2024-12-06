@@ -354,7 +354,7 @@ const PatientPage = () => {
                     inputId="nam"
                     value={patient.GioiTinh}
                     onChange={(e) => {
-                      setGender(e.value);
+                      // setGender(e.value);
                       setPatient({ ...patient, GioiTinh: "M" });
                     }}
                     checked={patient.GioiTinh === "M"}
@@ -371,7 +371,7 @@ const PatientPage = () => {
                     inputId="nu"
                     value={patient.GioiTinh}
                     onChange={(e) => {
-                      setGender(e.value);
+                      // setGender(e.value);
                       setPatient({ ...patient, GioiTinh: "F" });
                     }}
                     checked={patient.GioiTinh === "F"}
@@ -383,7 +383,7 @@ const PatientPage = () => {
                   </label>
                 </div>
               </div>
-              {submitted && !gender && (
+              {submitted && patient.GioiTinh === "" && (
                 <small
                   id="sex-help"
                   style={{
