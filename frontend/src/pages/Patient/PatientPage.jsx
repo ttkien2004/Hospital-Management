@@ -305,7 +305,7 @@ const PatientPage = () => {
           rows={10}
           rowsPerPageOptions={[10, 20, 30]}
           paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          currentPageReportTemplate="{first} đến {last} trong tất cả {totalRecords} bệnh nhân"
           emptyMessage="Không tìm thấy dữ liệu nào của bệnh nhân"
           removableSort
         >

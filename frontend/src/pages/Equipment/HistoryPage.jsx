@@ -94,7 +94,7 @@ const HistoryPage = ({
           rows={10}
           rowsPerPageOptions={[10, 20, 30]}
           paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          currentPageReportTemplate="{first} đến {last} trong tất cả {totalRecords} lần mượn"
           emptyMessage={
             equipment.Ten === ""
               ? "Không tìm thấy dữ liệu"

@@ -309,7 +309,7 @@ const EquipPage = () => {
           rows={10}
           rowsPerPageOptions={[10, 20, 30]}
           paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          currentPageReportTemplate="{first} đến {last} trong tất cả {totalRecords} thiết bị"
           removableSort
         >
           <Column
