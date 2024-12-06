@@ -98,7 +98,7 @@ const HistoryPage = ({
           emptyMessage={
             equipment.Ten === ""
               ? "Không tìm thấy dữ liệu"
-              : `Không tìm thấy lịch sử khám bệnh của bệnh nhân ${equipment.Ten}`
+              : `Không tìm thấy lịch sử khám bệnh của thiết bị ${equipment.Ten}`
           }
           header={
             equipment.Ten === ""

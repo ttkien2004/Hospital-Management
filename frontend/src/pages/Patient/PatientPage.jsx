@@ -44,7 +44,6 @@ const PatientPage = () => {
   };
   const [patients, setPatients] = useState([]);
   const [dialog, setDialog] = useState(false);
-  const [gender, setGender] = useState("");
   const [patient, setPatient] = useState(initialPatient);
   const [isView, setIsView] = useState(true);
   const [isUpdate, setIsUpdate] = useState(false);
@@ -175,7 +174,12 @@ const PatientPage = () => {
         alignHeader={"center"}
         align={"center"}
         body={col.field === "NgaySinh" && stringColumnDate}
-        sortable={col.field === "ChieuCao" || (col.field === "CanNang" && true)}
+        sortable={
+          col.field === "ChieuCao" ||
+          col.field === "CanNang" ||
+          col.field === "ID" ||
+          (col.field === "Ten" && true)
+        }
       ></Column>
     );
   });

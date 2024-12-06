@@ -179,6 +179,7 @@ const EquipPage = () => {
           tooltipOptions={{ position: "top" }}
           onClick={() => {
             getAllHistory(rowData.ID);
+            setEquipment(rowData);
             if (tableCard.current) {
               tableCard.current.scrollIntoView({ behavior: "smooth" });
             }
