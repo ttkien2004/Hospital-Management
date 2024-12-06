@@ -6,12 +6,17 @@ import { Toolbar } from "primereact/toolbar";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { RadioButton } from "primereact/radiobutton";
+import { useSelector } from "react-redux";
 import "../style.css";
 
 import { useState } from "react";
 import { Calendar } from "primereact/calendar";
 
 const EmpPage = () => {
+  const user = useSelector((state) => state.user.user);
+  if (!user || user.UserType !== "QuanTriVien") {
+    return <div>Bạn không có quyền hạn truy cập trang này</div>;
+  }
   const [data, setData] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [visible, setVisible] = useState(false);

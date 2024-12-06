@@ -3,27 +3,36 @@ import DefaultLayout from "./layout/DefaultLayout";
 import ErrorBoundary from "./layout/ErrorBoundary";
 import React, { Suspense } from "react";
 
-// function lazy(moduleLoader) {
-//   return async () => {
-//     const component = await moduleLoader();
-//     return { Component: component.default };
-//   };
-// }
 const EmpPage = React.lazy(() => import("./pages/Employee/EmpPage"));
 const PatientPage = React.lazy(() => import("./pages/Patient/PatientPage"));
 const EquipPage = React.lazy(() => import("./pages/Equipment/EquipPage"));
-
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
 const HistoryPage = React.lazy(() => import("./pages/Patient/HistoryPage"));
+
 const routes = [
   {
     path: "",
-    // element: <Navigate to={"/nhan-vien"} />,
-    element: <Navigate to={"/nhan-vien"}></Navigate>,
+    element: <Navigate to={"/login"} />,
+  },
+  {
+    path: "login",
+    element: (
+      <Suspense fallback={<div>Loading Login Page...</div>}>
+        <Login />
+      </Suspense>
+    ),
+  },
+  {
+    path: "register",
+    element: (
+      <Suspense fallback={<div>Loading Register Page...</div>}>
+        <Register />
+      </Suspense>
+    ),
   },
   {
     path: "nhan-vien",
-    // lazy: lazy(() => import("./pages/Employee/EmpPage")),
-    // lazy: React.lazy(() => import("./pages/Employee/EmpPage")),
     element: (
       <Suspense fallback={<div>Loading Employee Page...</div>}>
         <EmpPage />

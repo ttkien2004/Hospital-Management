@@ -20,7 +20,17 @@ import moment from "moment";
 import { InputText } from "primereact/inputtext";
 import HistoryPage from "./HistoryPage";
 
+import { useSelector } from "react-redux";
 const PatientPage = () => {
+  const user = useSelector((state) => state.user.user);
+  if (
+    !user ||
+    (user.UserType !== "BacSi" &&
+      user.UserType !== "YTa" &&
+      user.UserType !== "QuanTriVien")
+  ) {
+    return <div>Bạn không có quyền hạn truy cập trang này</div>;
+  }
   const initialPatient = {
     ID: "",
     CCCD: "",

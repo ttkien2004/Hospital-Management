@@ -9,6 +9,13 @@ const mssql = require("mssql");
 const PatientRoutes = require("./routes/PatientRoutes");
 const EquipmentRoutes = require("./routes/EquipRoutes");
 const EmployeeRoutes = require("./routes/EmployeeRoutes");
+const NotiRoutes = require("./routes/NotificationRoutes");
+const DiseaseRoutes = require("./routes/DiseaseRoutes");
+const AllergyRoutes = require("./routes/AllergyRoutes");
+const DiseaseSymptomRoutes = require("./routes/DiseaseSymptomRoutes");
+const PatientSymptomRoutes = require("./routes/PatientSymptomRoutes");
+const UserRoute = require("./routes/UserRoute");
+const AuthRoutes = require("./routes/AuthRoutes");
 const KhoaRoutes = require("./routes/KhoaRoutes");
 const DependentRoutes = require("./routes/DependentRoutes");
 const AddressRoutes = require("./routes/AddressRoutes");
@@ -41,6 +48,7 @@ const config = {
   password: process.env.DB_PASSWORD,
   server: process.env.DB_SERVER,
   database: process.env.DATABASE,
+  port: 1433,
   options: {
     encrypt: false,
     enableArithAbort: true, // Add this for compatibility
@@ -139,9 +147,20 @@ app.get("/", async (req, res) => {
 });
 
 // Implement API routes
+app.use("/api/user", UserRoute);
+app.use("/api/auth", AuthRoutes);
 app.use("/api/patient", PatientRoutes);
 app.use("/api/equipment", EquipmentRoutes);
 app.use("/api/employee", EmployeeRoutes);
+app.use("/api/notification", NotiRoutes);
+// app.use("/api/medicine", MedicineRoutes);
+app.use("/api/disease", DiseaseRoutes);
+app.use("/api/allergy", AllergyRoutes);
+app.use("/api/disease-symptom", DiseaseSymptomRoutes);
+app.use("/api/patient-symptom", PatientSymptomRoutes);
+app.use("/api/khoa", KhoaRoutes);
+// app.use("/api/chinhanh", CnRoutes);
+// app.use("/api/thuoc", ThuocRoutes);
 app.use("/api/faculty", KhoaRoutes);
 app.use("/api/address", AddressRoutes);
 app.use("/api/dependence", DependentRoutes);
