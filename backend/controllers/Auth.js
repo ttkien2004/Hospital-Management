@@ -79,7 +79,7 @@ const login = async (req, res) => {
 
     // So sánh mật khẩu
     const isMatch = await bcrypt.compare(UserPassword, user.UserPassword);
-    console.log(isMatch);
+    // console.log(isMatch);
 
     if (!isMatch) {
       return res.status(401).json({ msg: "Invalid UserName or UserPassword" });

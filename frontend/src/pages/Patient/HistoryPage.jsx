@@ -10,7 +10,14 @@ import "../style.css";
 import { Dialog } from "primereact/dialog";
 import { toast } from "react-toastify";
 import { Calendar } from "primereact/calendar";
+import { useSelector } from "react-redux";
 
+const initialHistory = {
+  NgayKham: "",
+  ChiSoSucKhoe: "",
+  YtaID: "",
+  Ho_va_ten: "",
+};
 const HistoryPage = ({
   historyRef,
   patient,
@@ -18,14 +25,6 @@ const HistoryPage = ({
   history,
   setHistory,
 }) => {
-  const initialHistory = {
-    NgayKham: "",
-    ChiSoSucKhoe: "",
-    YtaID: "",
-    Ho_va_ten: "",
-  };
-import { useSelector } from "react-redux";
-const HistoryPage = () => {
   const user = useSelector((state) => state.user.user);
   if (
     !user ||
@@ -35,7 +34,6 @@ const HistoryPage = () => {
   ) {
     return <div>Bạn không có quyền hạn truy cập trang này</div>;
   }
-  const { id } = useParams();
   // const [history, setHistory] = useState([]);
   const [prescription, setPrescription] = useState([]);
   const [selectedHistory, setSelectedHistory] = useState(initialHistory);

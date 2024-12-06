@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 // Lấy danh sách User
 const getAllUsers = (req, res) => {
-  new mssql.Request().query("SELECT * FROM [User]", (err, result) => {
+  new mssql.Request().query("SELECT * FROM [Users]", (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json({ msg: "Error fetching users", error: err.message });

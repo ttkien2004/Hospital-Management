@@ -48,6 +48,7 @@ const config = {
   password: process.env.DB_PASSWORD,
   server: process.env.DB_SERVER,
   database: process.env.DATABASE,
+  port: 1433,
   options: {
     encrypt: false,
     enableArithAbort: true, // Add this for compatibility
@@ -152,14 +153,14 @@ app.use("/api/patient", PatientRoutes);
 app.use("/api/equipment", EquipmentRoutes);
 app.use("/api/employee", EmployeeRoutes);
 app.use("/api/notification", NotiRoutes);
-app.use("/api/medicine", MedicineRoutes);
+// app.use("/api/medicine", MedicineRoutes);
 app.use("/api/disease", DiseaseRoutes);
 app.use("/api/allergy", AllergyRoutes);
 app.use("/api/disease-symptom", DiseaseSymptomRoutes);
 app.use("/api/patient-symptom", PatientSymptomRoutes);
 app.use("/api/khoa", KhoaRoutes);
-app.use("/api/chinhanh", CnRoutes);
-app.use("/api/thuoc", ThuocRoutes);
+// app.use("/api/chinhanh", CnRoutes);
+// app.use("/api/thuoc", ThuocRoutes);
 app.use("/api/faculty", KhoaRoutes);
 app.use("/api/address", AddressRoutes);
 app.use("/api/dependence", DependentRoutes);
