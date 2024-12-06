@@ -117,10 +117,9 @@ const deletePatient = async (req, res) => {
   const { id } = req.query;
   if (id === undefined || id.length < 8) {
     return res.status(400).json({ error: "ID không hợp lệ" });
+  } else if (!id.startsWith("BN")) {
+    return res.status(400).json({ error: "ID bặt buộc bắt đầu với chuỗi BN" });
   }
-  // else if (!id.startsWith("BN")) {
-  //   return res.status(400).json({ error: "ID bặt buộc bắt đầu với chuỗi BN" });
-  // }
   // console.log(id);
   // const query = `
   //         DELETE FROM BenhNhan WHERE ID = @id
