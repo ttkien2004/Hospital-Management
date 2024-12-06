@@ -103,8 +103,8 @@ const EquipPage = () => {
         setHistory(
           response.data.data.map((item) => ({
             ...item,
-            NgayMuon: new Date(item.Ngay_muon),
-            NgayTra: new Date(item.Ngay_tra),
+            Ngay_muon: new Date(item.Ngay_muon),
+            Ngay_tra: new Date(item.Ngay_tra),
           }))
         );
       }

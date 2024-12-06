@@ -18,8 +18,8 @@ const HistoryPage = ({
   setHistory,
 }) => {
   const initialHistory = {
-    Bac_si_id: "",
-    Ten_bac_si: "",
+    Nhan_vien_id: "",
+    Ten_nhan_vien: "",
     Ngay_muon: "",
     Ngay_tra: "",
   };
@@ -33,8 +33,8 @@ const HistoryPage = ({
 
   const columns = [
     // { field: "NgayKham", header: "Ngày khám" },
-    { field: "Bac_si_id", header: "ID" },
-    { field: "Ten_bac_si", header: "Tên bác sĩ" },
+    { field: "Nhan_vien_id", header: "ID" },
+    { field: "Nhan_vien", header: "Tên nhân viên" },
   ];
 
   const dynamicColumns = columns.map((col, index) => {
